@@ -1,5 +1,0 @@
-<testsuites>
-    <testsuite name="My whole project">
-        <directory>tests</directory>
-    </testsuite>
-</testsuites>
