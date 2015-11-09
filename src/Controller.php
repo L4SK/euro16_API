@@ -1,16 +1,16 @@
 <?php
 
-require_once dirname(__FILE__)."/../lib/Rest.inc.php";
-require_once dirname(__FILE__)."/Service.php";
+require_once dirname(__FILE__) . "/../lib/Rest.inc.php";
+require_once dirname(__FILE__) . "/Service.php";
 
 class Controller extends REST {
 
     public $data = "";
     public $service;
 
-    public function __construct() {
+    public function __construct($environnement) {
         parent::__construct();                // Init parent contructor
-        $this->service = new Service;
+        $this->service = new Service($environnement);
     }
 
     /*
@@ -38,59 +38,65 @@ class Controller extends REST {
     // unauthorized = 401
 
     private function creerUtilisateur() {
-        // Cross validation if the request method is POST else it will return "Not Acceptable" status
         if ($this->get_request_method() != "POST") {
             $this->response('', 406);
         }
-
         $nom = $this->_request['nom'];
         $prenom = $this->_request['prenom'];
         $photo = $this->_request['photo'];
         $id_facebook = $this->_request['id_facebook'];
-
-        // Input validations
         if (!empty($nom) && !empty($prenom) && !empty($photo) && !empty($id_facebook)) {
-            if ($this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook)) {
-                $this->response('', 201);
+            switch ($this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook)) {
+                case true:
+                    $this->response('', 201);
+                    break;
+                case false:
+                    $this->response('', 400);
+                    break;
             }
-            $this->response('', 400);
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
         }
-        // If invalid inputs "Bad Request" status message and reason
-        $error = array('status' => "Failed", "msg" => "Invalid json");
-        $this->response($this->json($error), 400);
     }
 
     private function getUtilisateurs() {
-        // Cross validation if the request method is GET else it will return "Not Acceptable" status
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);
         }
-
         $utilisateurs = $this->service->_getUtilisateurs();
-        if ($utilisateurs == -1) {
-            $this->response('', 400);
+        switch (true) {
+            case $utilisateurs == -1:
+                $this->response('', 400);
+                break;
+            case $utilisateurs > 0:
+                $this->response($this->json($utilisateurs), 200);
+                break;
+            default:
+                $this->response('', 204);
+                break;
         }
-
-        if (sizeof($utilisateurs) > 0) {
-            // If success everythig is good send header as "OK" and return list of users in JSON format
-            $this->response($this->json($utilisateurs), 200);
-        }
-        $this->response('', 204);    // If no records "No Content" status
     }
 
-    // private function deleteUser(){
-    // 	// Cross validation if the request method is DELETE else it will return "Not Acceptable" status
-    // 	if($this->get_request_method() != "DELETE"){
-    // 		$this->response('',406);
-    // 	}
-    // 	$id = (int)$this->_request['id'];
-    // 	if($id > 0){
-    // 		mysql_query("DELETE FROM users WHERE user_id = $id");
-    // 		$success = array('status' => "Success", "msg" => "Successfully one record deleted.");
-    // 		$this->response($this->json($success),200);
-    // 	}else
-    // 		$this->response('',204);	// If no records "No Content" status
-    // }
+    private function deleteUtilisateur() {
+        // Cross validation if the request method is DELETE else it will return "Not Acceptable" status
+        if ($this->get_request_method() != "DELETE") {
+            $this->response('', 406);
+        }
+        $suppression = $this->service->_deleteUtilisateur($this->_request['id_facebook']);
+        $suppression = (int)$this->_request['id'];
+        switch(true){
+            case $suppression > 0:
+                $this->response('', 200);
+                break;
+            case $suppression == 0:
+                $this->response('', 304);
+                break;
+            default:
+                $this->response('', 500);
+                break;
+        }
+    }
 
     /*
      *	Encode array into JSON
@@ -101,4 +107,5 @@ class Controller extends REST {
         }
     }
 }
+
 ?>

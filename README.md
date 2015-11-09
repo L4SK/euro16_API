@@ -4,8 +4,8 @@
 
 ## PHPUnit
 
-La dernière version de PHPUnit nécessite PHP 5.6 ou +
- 
+La dernière version stable de PHPUnit nécessite PHP 5.6 ou +
+
 - Installer php 5.6
 
         WINDOWS : http://windows.php.net/qa/
@@ -15,8 +15,10 @@ La dernière version de PHPUnit nécessite PHP 5.6 ou +
 - Télécharger PHPUnit 
 
         https://phar.phpunit.de/phpunit.phar
+
+### Ligne de commande 
     
-- L'archive est directement utilisable comme un executable. Il est conseillé de :
+- L'archive est directement utilisable comme un executable (chmod +x est peut-être néceéssaire). Il est conseillé de :
         
         - Copier l'archive un dossier phpunit
         - Renommer l'archive par "phpunit"
@@ -28,6 +30,39 @@ La dernière version de PHPUnit nécessite PHP 5.6 ou +
         > phpunit
         
 - A noter que phpunit utilise le fichier de configuration phpunit.xml à la racine du projet, qui indique pour le moment d'executer tous les tests.
+
+
+
+### Intellij
+    
+- Installer le plugin "php"
+
+        Intellij | Preferences | Plugin | Browse repositories
+        "PHP"
+
+- Définir le projet comme un projet PHP
+
+        File | Project Structure | Module
+        Supprimer le module existant
+        Creer un nouveau module PHP et "Empty PHP Project"
+        Choisir la racine du projet
+        Choisir 5.6 pour "PHP Language Level"
+        Choisir PHP 5.6 pour "Interpreter"
+        
+- Configurer PHPUnit sur Intellij
+
+        Intellij | Preferences | PHP | PHPUnit
+        Choisir "Path to phpunit.phar"
+        Pointer sur le phpunit.phar téléchargé précédemment
+        
+- Pour utiliser PHPUnit, il suffit de faire clic droit sur une méthode ou une classe de test, et de choisir "Run [...]"
+         
+
+### Eclipse
+
+- (TODO: Expliquer procédure pour plugin Eclipse)
+
+        TODO
     
 ***
 
@@ -37,4 +72,37 @@ Composer permet de gérer les différentes dépendences du projet
 
 - Installer composer
 
-        TODO
+        curl -sS https://getcomposer.org/installer | php
+        
+- L'archive est directement utilisable comme un executable. Il est conseillé de :
+
+        - Copier l'archive un dossier composer
+        - Renommer l'archive par "composer"
+        - Ajouter le dossier composer au PATH
+        
+- PHPUnit s'execute alors simplement :
+
+        > cd <racine_du_projet>
+        > composer install
+        
+- A noter que composer utilise le fichier de configuration composer.json à la racine du projet, qui indique les dépendances à télécharger (dans le dossier ./vendor)
+
+***
+
+## Environnements dev/test/prod
+
+- Penser à adapter le fichier index.php suivant l'environnement de travail
+
+- Pour l'environnement de dev
+
+        $api = new Controller("dev");
+        
+- Pour l'environnement de prod
+
+        $api = new Controller("prod");
+        
+- Il faut également prévoir les bases de données mysql correspondantes 
+
+        euro16_test : utilisée lors des tests unitaires avec PHPUnit
+        euro16_dev : utilisée pour tester l'appli avec une BDD locale
+        euro16_prod : uniquement utilisée par l'environnement de prod (donc pas besoin d'être créee localement)
