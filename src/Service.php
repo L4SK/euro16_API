@@ -124,7 +124,7 @@ class Service {
         if (empty($id_facebook) || empty($equipe1) || empty($equipe2) || empty($date_match) || empty($resultat)) {
             return false;
         }
-        if(!in_array($resultat,['1','n','N','2'])){
+        if (!in_array($resultat, ['1', 'n', 'N', '2'])) {
             error_log("Resultat incorrect");
             return false;
         }
@@ -273,6 +273,58 @@ class Service {
             return -1;
         }
         $req = "DELETE FROM Utilisateur WHERE ID_Facebook = '$id_facebook'";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        return $this->mysqli->affected_rows;
+    }
+
+    public function _deleteGroupe($groupe) {
+        if (empty($groupe)) {
+            return -1;
+        }
+        $req = "DELETE FROM Groupe WHERE NomGrp = '$groupe'";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        return $this->mysqli->affected_rows;
+    }
+
+    public function _deleteCommunaute($communaute) {
+        if (empty($communaute)) {
+            return -1;
+        }
+        $req = "DELETE FROM Communaute WHERE NomCom = '$communaute'";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        return $this->mysqli->affected_rows;
+    }
+
+    public function _deleteUtilisateurGroupe($id_facebook, $groupe) {
+        if (empty($communaute)) {
+            return -1;
+        }
+        // TODO Delete pronostics de l'utilisateur pour le groupe en question OU ajouter un trigger en BDD pour le faire (mieux)
+        // TODO Tests unitaires associes
+        $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND NomGrp = '$groupe'";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        return $this->mysqli->affected_rows;
+    }
+
+    public function _deleteUtilisateurCommunaute($id_facebook, $communaute) {
+        if (empty($communaute)) {
+            return -1;
+        }
+        // TODO Delete pronostics de l'utilisateur pour la communaute en question OU ajouter un trigger en BDD pour le faire (mieux)
+        // TODO Tests unitaires associes
+        $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND NomCom = '$communaute'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return -1;

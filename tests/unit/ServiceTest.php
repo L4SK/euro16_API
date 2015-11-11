@@ -237,12 +237,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     public function test_creerPronosticSuccessGroupe() {
         $groupe = "NomGroupe";
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="1";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
@@ -255,12 +255,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     public function test_creerPronosticSuccessCommunaute() {
         $communaute = "NomCommunaute";
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="1";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
@@ -272,12 +272,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_creerPronosticSuccessGlobal() {
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="1";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
 
@@ -288,12 +288,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_creerPronosticFailureUtilisateurInexistant() {
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="1";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
 
         $expectedValue = false;
@@ -303,12 +303,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_creerPronosticFailureMatchInexistant() {
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="1";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
 
         $expectedValue = false;
@@ -318,12 +318,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_creerPronosticFailureResultatIncorrect() {
         $id_facebook = "FB123456uAdmin";
-        $equipe1="France";
-        $equipe2="Portugal";
-        $score1="";
-        $score2="";
-        $resultat="B";
-        $date_match="01-07-2015 10:00:00";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "B";
+        $date_match = "01-07-2015 10:00:00";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
 
@@ -402,6 +402,50 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-1, $this->service->_deleteUtilisateur(""), "La suppresion d'utilisateur aurait du echouer pour id vide");
     }
 
+
+    public function test_deleteGroupeSuccess() {
+        $nom = "NomGroupe";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
+
+        $expectedValue = 1;
+        $value = $this->service->_deleteGroupe($nom);
+        $this->assertEquals($expectedValue, $value, "La suppression de groupe aurait du reussir");
+        // TODO Peut-etre verifier que le "ON DELETE CASCADE" est respectee? ou alors garder ce cas pour les tests d'integration
+    }
+
+    public function test_deleteGroupeInexistant() {
+        $nom = "NomGroupe";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
+
+        $expectedValue = 0;
+        $value = $this->service->_deleteGroupe("NomInconnu");
+        $this->assertEquals($expectedValue, $value, "La suppression de groupe aurait du retourner 0 car l'id est inexistant");
+        // TODO Peut-etre verifier que le "ON DELETE CASCADE" est respectee? ou alors garder ce cas pour les tests d'integration
+    }
+
+    public function test_deleteCommunauteSuccess() {
+        $nom = "NomCommunaute";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
+
+        $expectedValue = 1;
+        $value = $this->service->_deleteCommunaute($nom);
+        $this->assertEquals($expectedValue, $value, "La suppression de communaute aurait du reussir");
+        // TODO Peut-etre verifier que le "ON DELETE CASCADE" est respectee? ou alors garder ce cas pour les tests d'integration
+    }
+
+    public function test_deleteCommunauteInexistante() {
+        $nom = "NomCommunaute";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
+
+        $expectedValue = 0;
+        $value = $this->service->_deleteCommunaute("NomInconnu");
+        $this->assertEquals($expectedValue, $value, "La suppression de communaute aurait du retourner 0 car l'id est inexistant");
+        // TODO Peut-etre verifier que le "ON DELETE CASCADE" est respectee? ou alors garder ce cas pour les tests d'integration
+    }
 }
 
 ?>
