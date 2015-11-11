@@ -31,6 +31,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook);
         $this->assertEquals($expectedValue, $value, "La creation d'utilisateur aurait du reussir");
     }
+
     // Test trop precis, ne pas reproduire
     public function test_creerUtilisateurFailureIdVide() {
         $nom = "NomTest";
@@ -43,6 +44,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expectedValue, $value, "La creation aurait du echouer pour id_facebook vide");
     }
+
     public function test_creerUtilisateurFailureDuplique() {
         $nom = "NomTest";
         $prenom = "PrenomTest";
@@ -60,9 +62,281 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
 
+    public function test_creerGroupeSuccess() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $nom = "GroupeTest";
+        $admin = "FB123456u1";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+
+        $expectedValue = true;
+        $value = $this->service->_creerGroupe($nom, $admin, $photo);
+        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du reussir");
+    }
+
+    public function test_creerGroupeFailureAdminInexistant() {
+        $nom = "GroupeTest";
+        $admin = "UtilisateurInexistant";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+
+        $expectedValue = false;
+        $value = $this->service->_creerGroupe($nom, $admin, $photo);
+        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
+    }
+
+
+    public function test_creerCommunauteSuccess() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $nom = "CommunauteTest";
+        $admin = "FB123456u1";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $type = "default";
+
+        $expectedValue = true;
+        $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
+        $this->assertEquals($expectedValue, $value, "La creation de communaute aurait du reussir");
+    }
+
+    public function test_creerCommunauteFailureAdminInexistant() {
+        $nom = "CommunauteTest";
+        $admin = "UtilisateurInexistant";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $type = "default";
+
+        $expectedValue = false;
+        $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
+        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
+    }
+
+
+    public function test_creerMatchSuccess() {
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $date_match = "01-07-2016 20:00:00";
+
+        $expectedValue = true;
+        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->assertEquals($expectedValue, $value, "La creation de match aurait du reussir");
+    }
+
+    public function test_creerMatchFailureDuplique() {
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $date_match = "01-07-2016 20:00:00";
+
+        $expectedValue = false;
+
+        // Premiere insertion
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        // Deuxieme insertion
+        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $this->assertEquals($expectedValue, $value, "La creation de match aurait du echouer pour doublon");
+    }
+
+
+    public function test_ajouterUtilisateurGroupeSuccess() {
+        $groupe = "NomGroupe";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
+
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = true;
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du reussir");
+    }
+
+    public function test_ajouterUtilisateurGroupeFailureDuplique() {
+        $groupe = "NomGroupe";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
+
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = false;
+
+        // Premiere insertion
+        $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        // Deuxieme insertion
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echoue pour doublon");
+    }
+
+    public function test_ajouterUtilisateurGroupeFailureUtilisateurInexistant() {
+        $groupe = "NomGroupe";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
+
+        $expectedValue = false;
+        $value = $this->service->_ajouterUtilisateurGroupe("ID_INEXISTANT", $groupe);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour utilisateur inexistant");
+    }
+
+    public function test_ajouterUtilisateurGroupeFailureGroupeInexistant() {
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = false;
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, "NOM_INEXISTANT");
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour groupe inexistant");
+    }
+
+
+    public function test_ajouterUtilisateurCommunauteSuccess() {
+        $communaute = "NomCommunaute";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
+
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = true;
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du reussir");
+    }
+
+    public function test_ajouterUtilisateurCommunauteFailureDuplique() {
+        $communaute = "NomCommunaute";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
+
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = false;
+
+        // Premiere insertion
+        $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        // Deuxieme insertion
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echoue pour doublon");
+    }
+
+    public function test_ajouterUtilisateurCommunauteFailureUtilisateurInexistant() {
+        $groupe = "NomGroupe";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerCommunaute($groupe, "FB123456uAdmin", "Photo1", "default");
+
+        $expectedValue = false;
+        $value = $this->service->_ajouterUtilisateurCommunaute("ID_INEXISTANT", $groupe);
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour utilisateur inexistant");
+    }
+
+    public function test_ajouterUtilisateurCommunauteFailureCommunauteInexistante() {
+        $id_facebook = "FB123456789EXEMPLE";
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+
+        $expectedValue = false;
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, "NOM_INEXISTANT");
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour communaute inexistante");
+    }
+
+
+    public function test_creerPronosticSuccessGroupe() {
+        $groupe = "NomGroupe";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="1";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $expectedValue = true;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
+    }
+
+    public function test_creerPronosticSuccessCommunaute() {
+        $communaute = "NomCommunaute";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="1";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $expectedValue = true;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
+    }
+
+    public function test_creerPronosticSuccessGlobal() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="1";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $expectedValue = true;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
+    }
+
+    public function test_creerPronosticFailureUtilisateurInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="1";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $expectedValue = false;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour utilisateur inexistant");
+    }
+
+    public function test_creerPronosticFailureMatchInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="1";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+
+        $expectedValue = false;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour match inexistant");
+    }
+
+    public function test_creerPronosticFailureResultatIncorrect() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1="France";
+        $equipe2="Portugal";
+        $score1="";
+        $score2="";
+        $resultat="B";
+        $date_match="01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+
+        $expectedValue = false;
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour resultat incorrect");
+    }
+
+
     public function test_getUtilisateursVide() {
         $this->assertTrue(empty($this->service->_getUtilisateurs()), "La liste d'utilisateurs devrait etre vide");
     }
+
     public function test_getUtilisateursSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
@@ -89,6 +363,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(in_array($expectedValue2, $value), "Le resultat devrait contenir les utilisateurs qui viennent d'etre crees");
         $this->assertTrue(in_array($expectedValue3, $value), "Le resultat devrait contenir les utilisateurs qui viennent d'etre crees");
     }
+
     // Test trop precis, ne pas reproduire
     public function test_getUtilisateursFailure() {
         // sauvegarde de l'objet original
@@ -117,217 +392,16 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->assertEquals(1, $this->service->_deleteUtilisateur("FB123456u1"), "La suppression d'utilisateur aurait du reussir");
     }
+
     public function test_deleteUtilisateurInexistant() {
         $this->assertEquals(0, $this->service->_deleteUtilisateur("ID_INEXISTANT"), "La suppression d'utilisateur aurait du retourner 0 car l'id est inexistant");
     }
+
     // Test trop precis, ne pas reproduire
     public function test_deleteUtilisateurFailureIdVide() {
         $this->assertEquals(-1, $this->service->_deleteUtilisateur(""), "La suppresion d'utilisateur aurait du echouer pour id vide");
     }
 
-
-    public function test_creerGroupeSuccess(){
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $nom = "GroupeTest";
-        $admin = "FB123456u1";
-        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
-
-        $expectedValue = true;
-        $value = $this->service->_creerGroupe($nom, $admin, $photo);
-        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du reussir");
-    }
-    public function test_creerGroupeFailureAdminInexistant(){
-        $nom = "GroupeTest";
-        $admin = "UtilisateurInexistant";
-        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
-
-        $expectedValue = false;
-        $value = $this->service->_creerGroupe($nom, $admin, $photo);
-        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
-    }
-
-
-    public function test_creerCommunauteSuccess(){
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $nom = "CommunauteTest";
-        $admin = "FB123456u1";
-        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
-        $type = "default";
-
-        $expectedValue = true;
-        $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
-        $this->assertEquals($expectedValue, $value, "La creation de communaute aurait du reussir");
-    }
-    public function test_creerCommunauteFailureAdminInexistant(){
-        $nom = "CommunauteTest";
-        $admin = "UtilisateurInexistant";
-        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
-        $type = "default";
-
-        $expectedValue = false;
-        $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
-        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
-    }
-
-
-    public function test_creerMatchSuccess(){
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $date_match = "01-07-2016 20:00:00";
-
-        $expectedValue = true;
-        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
-        $this->assertEquals($expectedValue, $value, "La creation de match aurait du reussir");
-    }
-    public function test_creerMatchFailureDuplique(){
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $date_match = "01-07-2016 20:00:00";
-
-        $expectedValue = false;
-
-        // Premiere insertion
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
-        // Deuxieme insertion
-        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
-
-        $this->assertEquals($expectedValue, $value, "La creation de match aurait du echouer pour doublon");
-    }
-
-
-    public function test_ajouterUtilisateurGroupeSuccess(){
-        $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
-
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = true;
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du reussir");
-    }
-    public function test_ajouterUtilisateurGroupeFailureDuplique(){
-        $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
-
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = false;
-
-        // Premiere insertion
-        $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
-        // Deuxieme insertion
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echoue pour doublon");
-    }
-    public function test_ajouterUtilisateurGroupeFailureUtilisateurInexistant(){
-        $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
-
-        $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurGroupe("ID_INEXISTANT", $groupe);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour utilisateur inexistant");
-    }
-    public function test_ajouterUtilisateurGroupeFailureGroupeInexistant(){
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, "NOM_INEXISTANT");
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour groupe inexistant");
-    }
-
-
-    public function test_ajouterUtilisateurCommunauteSuccess(){
-        $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
-
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = true;
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du reussir");
-    }
-    public function test_ajouterUtilisateurCommunauteFailureDuplique(){
-        $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
-
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = false;
-
-        // Premiere insertion
-        $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
-        // Deuxieme insertion
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echoue pour doublon");
-    }
-    public function test_ajouterUtilisateurCommunauteFailureUtilisateurInexistant(){
-        $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerCommunaute($groupe, "FB123456uAdmin", "Photo1", "default");
-
-        $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurCommunaute("ID_INEXISTANT", $groupe);
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour utilisateur inexistant");
-    }
-    public function test_ajouterUtilisateurCommunauteFailureCommunauteInexistante(){
-        $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
-
-        $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, "NOM_INEXISTANT");
-        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour communaute inexistante");
-    }
-
-
-    public function test_creerPronosticSuccessGroupe(){
-        // TODO
-
-//        $expectedValue = true;
-//        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
-//        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
-
-        $this->assertTrue(false);
-    }
-    public function test_creerPronosticSuccessCommunaute(){
-        // TODO
-
-//        $expectedValue = true;
-//        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
-//        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
-
-        $this->assertTrue(false);
-    }
-    public function test_creerPronosticSuccessGlobal(){
-        // TODO
-
-//        $expectedValue = true;
-//        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
-//        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
-
-        $this->assertTrue(false);
-    }
-    public function test_creerPronosticFailureUtilisateurInexistant(){
-        // TODO
-        $this->assertTrue(false);
-    }
-    public function test_creerPronosticFailureMatchIncorrect(){
-        // TODO
-        $this->assertTrue(false);
-    }
-    public function test_creerPronosticFailureResultatIncorrect(){
-        // TODO
-        $this->assertTrue(false);
-    }
 }
 
 ?>
