@@ -10,7 +10,7 @@ Utiliser la version 4.8 de PHPUnit
 
         WINDOWS : http://windows.php.net/qa/
     
-        MAC : > brew install php56
+        MAC : > brew install php55
     
 - Télécharger PHPUnit en choisissant la version 4.5 (old stable)
 
@@ -46,8 +46,8 @@ Utiliser la version 4.8 de PHPUnit
         Supprimer le module existant
         Creer un nouveau module PHP et "Empty PHP Project"
         Choisir la racine du projet
-        Choisir 5.6 pour "PHP Language Level"
-        Choisir PHP 5.6 pour "Interpreter"
+        Choisir 5.5 pour "PHP Language Level"
+        Choisir PHP 5.5 pour "Interpreter"
         
 - Configurer PHPUnit sur Intellij
 
