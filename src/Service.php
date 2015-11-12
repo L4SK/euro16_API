@@ -47,7 +47,6 @@ class Service {
         }
         return true;
     }
-
     public function _creerGroupe($nom, $admin, $photo) {
         if (empty($nom) || empty($admin)) {
             return false;
@@ -73,7 +72,6 @@ class Service {
         }
         return true;
     }
-
     public function _creerCommunaute($nom, $admin, $photo, $type) {
         if (empty($nom) || empty($admin) || empty($type)) {
             return false;
@@ -98,7 +96,6 @@ class Service {
         }
         return true;
     }
-
     public function _creerMatch($equipe1, $equipe2, $date_match) {
         if (empty($equipe1) || empty($equipe2) || empty($date_match)) {
             return false;
@@ -119,7 +116,6 @@ class Service {
         }
         return true;
     }
-
     public function _creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, $communaute) {
         if (empty($id_facebook) || empty($equipe1) || empty($equipe2) || empty($date_match) || empty($resultat)) {
             return false;
@@ -174,7 +170,6 @@ class Service {
         }
         return true;
     }
-
     public function _ajouterUtilisateurGroupe($id_facebook, $groupe) {
         if (empty($id_facebook) || empty($groupe)) {
             return false;
@@ -213,7 +208,6 @@ class Service {
         }
         return true;
     }
-
     public function _ajouterUtilisateurCommunaute($id_facebook, $communaute) {
         if (empty($id_facebook) || empty($communaute)) {
             return false;
@@ -267,6 +261,80 @@ class Service {
         }
         return $result;
     }
+    public function _getGroupes() {
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getCommunautes() {
+        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom FROM Communaute";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getUtilisateur($id_facebook) {
+        if(empty($id_facebook)){
+            return [];
+        }
+        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+
+        return $result;
+    }
+    public function _getGroupe($groupe) {
+        if(empty($groupe)){
+            return [];
+        }
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe WHERE NomGrp='$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return $result;
+    }
+    public function _getCommunaute($communaute) {
+        if(empty($communaute)){
+            return [];
+        }
+        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom FROM Communaute WHERE NomCom='$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return $result;
+    }
 
     public function _deleteUtilisateur($id_facebook) {
         if (empty($id_facebook)) {
@@ -279,7 +347,6 @@ class Service {
         }
         return $this->mysqli->affected_rows;
     }
-
     public function _deleteGroupe($groupe) {
         if (empty($groupe)) {
             return -1;
@@ -291,7 +358,6 @@ class Service {
         }
         return $this->mysqli->affected_rows;
     }
-
     public function _deleteCommunaute($communaute) {
         if (empty($communaute)) {
             return -1;
@@ -303,28 +369,40 @@ class Service {
         }
         return $this->mysqli->affected_rows;
     }
-
     public function _deleteUtilisateurGroupe($id_facebook, $groupe) {
-        if (empty($communaute)) {
+        if (empty($id_facebook) || empty($groupe)) {
             return -1;
         }
-        // TODO Delete pronostics de l'utilisateur pour le groupe en question OU ajouter un trigger en BDD pour le faire (mieux)
-        // TODO Tests unitaires associes
-        $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND NomGrp = '$groupe'";
+        $req = "SELECT 1 FROM Groupe WHERE AdminGrp='$id_facebook' AND NomGrp='$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 1) {
+            error_log("Impossible de supprimer l'utilisateur : Il est admin du groupe");
+            return -1;
+        }
+        $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND Groupe = '$groupe'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return -1;
         }
         return $this->mysqli->affected_rows;
     }
-
     public function _deleteUtilisateurCommunaute($id_facebook, $communaute) {
-        if (empty($communaute)) {
+        if (empty($id_facebook) || empty($communaute)) {
             return -1;
         }
-        // TODO Delete pronostics de l'utilisateur pour la communaute en question OU ajouter un trigger en BDD pour le faire (mieux)
-        // TODO Tests unitaires associes
-        $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND NomCom = '$communaute'";
+        $req = "SELECT 1 FROM Communaute WHERE AdminCom='$id_facebook' AND NomCom='$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 1) {
+            error_log("Impossible de supprimer l'utilisateur : Il est admin de la communaute");
+            return -1;
+        }
+        $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$communaute'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return -1;

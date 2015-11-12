@@ -4,15 +4,15 @@
 
 ## PHPUnit
 
-La dernière version stable de PHPUnit nécessite PHP 5.6 ou +
+Utiliser la version 4.8 de PHPUnit
 
-- Installer php 5.6
+- Installer php 5.5
 
         WINDOWS : http://windows.php.net/qa/
     
         MAC : > brew install php56
     
-- Télécharger PHPUnit 
+- Télécharger PHPUnit en choisissant la version 4.5 (old stable)
 
         https://phar.phpunit.de/phpunit.phar
 
@@ -20,7 +20,7 @@ La dernière version stable de PHPUnit nécessite PHP 5.6 ou +
     
 - L'archive est directement utilisable comme un executable (chmod +x est peut-être néceéssaire). Il est conseillé de :
         
-        - Copier l'archive un dossier phpunit
+        - Copier l'archive dans un dossier phpunit
         - Renommer l'archive par "phpunit"
         - Ajouter le dossier phpunit au PATH
 
@@ -76,7 +76,7 @@ Composer permet de gérer les différentes dépendences du projet
         
 - L'archive est directement utilisable comme un executable. Il est conseillé de :
 
-        - Copier l'archive un dossier composer
+        - Copier l'archive dans un dossier composer
         - Renommer l'archive par "composer"
         - Ajouter le dossier composer au PATH
         
