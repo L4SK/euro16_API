@@ -78,6 +78,17 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $value = $this->service->_creerGroupe($nom, $admin, $photo);
         $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
     }
+    public function test_creerGroupeNomGroupeExistant() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $nom = "GroupeTest";
+        $admin = "FB123456u1";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+
+        $expectedValue = false;
+        $this->service->_creerGroupe($nom, $admin, $photo);
+        $value = $this->service->_creerGroupe($nom, $admin, $photo);
+        $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
+    }
 
     public function test_creerCommunauteSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
@@ -99,6 +110,18 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $expectedValue = false;
         $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
         $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
+    }
+    public function test_creerCommunauteNomCommunauteExistant() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $nom = "CommunauteTest";
+        $admin = "FB123456u1";
+        $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $type = "default";
+
+        $expectedValue = false;
+        $this->service->_creerCommunaute($nom, $admin, $photo, $type);
+        $value = $this->service->_creerCommunaute($nom, $admin, $photo, $type);
+        $this->assertEquals($expectedValue, $value, "La creation de communaute aurait du reussir");
     }
 
     public function test_creerMatchSuccess() {
@@ -485,6 +508,98 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_getCommunauteInexistante() {
         $this->assertTrue(empty($this->service->_getCommunaute("ID_INEXISTANT")), "Le resultat ne devrait rien contenir");
+    }
+
+    public function test_getUtilisateursGroupeSuccess() {
+        $groupe = "NomGroupe";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
+        $this->service->_ajouterUtilisateurGroupe("FB123456u1", $groupe);
+        $this->service->_ajouterUtilisateurGroupe("FB123456u2", $groupe);
+
+        $expectedValue = array(
+            array("NomUti" => "Nom1",
+                "PrenomUti" => "Prenom1",
+                "PhotoUti" => "Photo1",
+                "ID_Facebook" => "FB123456u1"
+            ),
+            array("NomUti" => "Nom2",
+                "PrenomUti" => "Prenom2",
+                "PhotoUti" => "Photo2",
+                "ID_Facebook" => "FB123456u2"
+            ),
+            array("NomUti" => "NomAdmin",
+                "PrenomUti" => "PrenomAdmin",
+                "PhotoUti" => "PhotoAdmin",
+                "ID_Facebook" => "FB123456uAdmin"
+            )
+        );
+        $value = $this->service->_getUtilisateursGroupe($groupe);
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les utilisateurs du groupe");
+    }
+    public function test_getUtilisateursGroupeInexistante() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "Photo1");
+
+        $expectedValue = false;
+        $value = $this->service->_getUtilisateursGroupe("NomGroupeInexistant");
+        $this->assertEquals($expectedValue, $value, "Le resultat ne devrait retourner aucun utilisateur du groupe");
+    }
+
+    public function test_getUtilisateursCommunauteSuccess() {
+        $communaute = "NomCommunaute";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoCommunaute1", "default");
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u1", $communaute);
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $communaute);
+
+        $expectedValue = array(
+            array("NomUti" => "Nom1",
+                "PrenomUti" => "Prenom1",
+                "PhotoUti" => "Photo1",
+                "ID_Facebook" => "FB123456u1"
+            ),
+            array("NomUti" => "Nom2",
+                "PrenomUti" => "Prenom2",
+                "PhotoUti" => "Photo2",
+                "ID_Facebook" => "FB123456u2"
+            ),
+            array("NomUti" => "NomAdmin",
+                "PrenomUti" => "PrenomAdmin",
+                "PhotoUti" => "PhotoAdmin",
+                "ID_Facebook" => "FB123456uAdmin"
+            )
+        );
+        $value = $this->service->_getUtilisateursCommunaute($communaute);
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les utilisateurs de la communaute");
+    }
+    public function test_getUtilisateursCommunauteInexistante() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute1", "default");
+
+        $expectedValue = false;
+        $value = $this->service->_getUtilisateursCommunaute("NomCommunauteInexistant");
+        $this->assertEquals($expectedValue, $value, "Le resultat ne devrait retourner aucun utilisateur de la communaute");
+    }
+
+    public function test_updateUtilisateurSuccess() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+
+        $this->assertTrue($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u1"), "L'update d'utilisateur aurait du reussir");
+    }
+    public function test_updateUtilisateurIdVide() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+
+        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", ""), "L'update d'utilisateur n'aurait pas du reussir");
+    }
+    public function test_updateUtilisateurIdInexistant() {
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+
+        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2"), "L'update d'utilisateur n'aurait pas du reussir");
     }
 
     public function test_deleteUtilisateurSuccess() {

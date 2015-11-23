@@ -60,6 +60,15 @@ class Service {
             error_log("Impossible de creer le groupe : L'admin n'est pas un utilisateur existant");
             return false;
         }
+        $req = "SELECT 1 FROM Groupe WHERE NomGrp='$nom'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows != 0) {
+            error_log("Impossible de creer le groupe : Le nom du groupe existe deja");
+            return false;
+        }
 
         $req = "INSERT INTO Groupe(NomGrp, AdminGrp, PhotoGrp) VALUES ('$nom', '$admin', '$photo')";
         if (!$this->mysqli->query($req)) {
@@ -192,7 +201,8 @@ class Service {
             error_log("Impossible d'ajouter l'utilisateur : deja associe au groupe");
             return false;
         }
-        $req = "SELECT 1 FROM Groupe WHERE NomGrp='$groupe'";
+
+        $req = "SELECT * FROM Groupe WHERE NomGrp='$groupe'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -201,7 +211,13 @@ class Service {
             error_log("Impossible d'ajouter l'utilisateur au groupe : groupe inexistant en base");
             return false;
         }
-        $req = "INSERT INTO Utilisateur_Groupe(Utilisateur, Groupe) VALUES ('$id_facebook', '$groupe')";
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $id = $result['ID_Grp'];
+
+        $req = "INSERT INTO Utilisateur_Groupe(Utilisateur, Groupe) VALUES ('$id_facebook', '$id')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -230,7 +246,7 @@ class Service {
             error_log("Impossible d'ajouter l'utilisateur : deja associe a la communaute");
             return false;
         }
-        $req = "SELECT 1 FROM Communaute WHERE NomCom='$communaute'";
+        $req = "SELECT * FROM Communaute WHERE NomCom='$communaute'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -239,7 +255,13 @@ class Service {
             error_log("Impossible d'ajouter l'utilisateur a la communaute : communaute inexistante en base");
             return false;
         }
-        $req = "INSERT INTO Utilisateur_Communaute(Utilisateur, Communaute) VALUES ('$id_facebook', '$communaute')";
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $id = $result['ID_Com'];
+
+        $req = "INSERT INTO Utilisateur_Communaute(Utilisateur, Communaute) VALUES ('$id_facebook', '$id')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -334,6 +356,78 @@ class Service {
             return false;
         }
         return $result;
+    }
+    public function _getUtilisateursGroupe($groupe) {
+        if(empty($groupe)){
+            return [];
+        }
+        $req = "SELECT * FROM Groupe WHERE groupe='$groupe'))";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+
+        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook IN (SELECT Utilisateur FROM Utilisateur_Groupe WHERE Groupe IN (SELECT ID_Grp FROM Groupe WHERE NomGrp='$groupe'))";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getUtilisateursCommunaute($communaute) {
+        if(empty($communaute)){
+            return [];
+        }
+        $req = "SELECT * FROM Communaute WHERE communaute='$communaute'))";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+
+        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook IN (SELECT Utilisateur FROM Utilisateur_Communaute WHERE Communaute IN (SELECT ID_Com FROM Communaute WHERE NomCom='$communaute'))";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+
+    public function _updateUtilisateur($nom, $prenom, $photo, $id_facebook) {
+        if(empty($id_facebook)){
+            return false;
+        }
+        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+
+        $req = "UPDATE Utilisateur SET NomUti='$nom', PrenomUti='$prenom', PhotoUti='$photo' WHERE ID_Facebook='$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return true;
+
     }
 
     public function _deleteUtilisateur($id_facebook) {
