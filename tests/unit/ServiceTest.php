@@ -602,6 +602,25 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2"), "L'update d'utilisateur n'aurait pas du reussir");
     }
 
+    public function test_updateGroupeSuccess() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
+
+        $this->assertTrue($this->service->_updateGroupe("NomGroupe", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+    }
+    public function test_updateGroupeNomVide() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
+
+        $this->assertFalse($this->service->_updateGroupe("", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+    }
+    public function test_updateGroupeNomInexistant() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
+
+        $this->assertFalse($this->service->_updateGroupe("NomGroupeInexistant", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+    }
+
     public function test_deleteUtilisateurSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->assertEquals(1, $this->service->_deleteUtilisateur("FB123456u1"), "La suppression d'utilisateur aurait du reussir");

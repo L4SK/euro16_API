@@ -429,6 +429,54 @@ class Service {
         return true;
 
     }
+    public function _updateGroupe($old_nom, $new_nom, $admin, $photo) {
+        if(empty($old_nom)){
+            return false;
+        }
+        $req = "SELECT ID_Grp FROM Groupe WHERE NomGrp='$old_nom'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+
+        $idGrp = $rlt = $sql->fetch_assoc()["ID_Grp"];
+        if(!empty($new_nom)) {
+            $req = "SELECT 1 FROM Groupe WHERE NomGrp='$new_nom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            if ($sql->num_rows != 0) {
+                return false;
+            }
+            $req = "UPDATE Groupe SET NomGrp='$new_nom' WHERE ID_Grp='$idGrp'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        if(!empty($admin)) {
+            $req = "UPDATE Groupe SET AdminGrp='$admin' WHERE ID_Grp='$idGrp'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        if(!empty($photo)) {
+            $req = "UPDATE Groupe SET PhotoGrp='$photo' WHERE ID_Grp='$idGrp'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public function _deleteUtilisateur($id_facebook) {
         if (empty($id_facebook)) {
