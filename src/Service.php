@@ -361,7 +361,7 @@ class Service {
         if(empty($groupe)){
             return [];
         }
-        $req = "SELECT * FROM Groupe WHERE groupe='$groupe'))";
+        $req = "SELECT * FROM Groupe WHERE NomGrp='$groupe'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -386,7 +386,7 @@ class Service {
         if(empty($communaute)){
             return [];
         }
-        $req = "SELECT * FROM Communaute WHERE communaute='$communaute'))";
+        $req = "SELECT * FROM Communaute WHERE NomCom='$communaute'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -404,6 +404,81 @@ class Service {
             while ($rlt = $sql->fetch_assoc()) {
                 $result[] = $rlt;
             }
+        }
+        return $result;
+    }
+    public function _getMatchs() {
+        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch FROM Match_Euro16";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $rlt["DateMatch"] = strtotime($rlt["DateMatch"]);
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getMatch($equipe1,$equipe2, $dateMatch) {
+        if(empty($equipe1) || empty($equipe2) || empty($dateMatch)) {
+            return false;
+        }
+        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$dateMatch','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result["DateMatch"] = strtotime($result["DateMatch"]);
+        return $result;
+    }
+    public function _getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match) {
+        if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        if (!empty($groupe)) {
+            $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp='$groupe'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            $ID_Cla = $sql->fetch_object()->ID_Cla;
+        } else if (!empty($communaute)) {
+            $req = "SELECT ID_Cla FROM Communaute WHERE NomCom='$communaute'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            $ID_Cla = $sql->fetch_object()->ID_Cla;
+        } else if (empty($groupe) && empty($communaute)) {
+            $ID_Cla = "ID_GLOBAL";
+        }
+        $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        $ID_Mch = $sql->fetch_object()->ID_Mch;
+        $req = "SELECT Utilisateur, Score1, Score2, Resultat FROM Pronostic WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
         }
         return $result;
     }
@@ -460,6 +535,15 @@ class Service {
         }
 
         if(!empty($admin)) {
+            $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$admin'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            if ($sql->num_rows != 1) {
+                error_log("Impossible de creer la communaute : L'admin n'est pas un utilisateur existant");
+                return false;
+            }
             $req = "UPDATE Groupe SET AdminGrp='$admin' WHERE ID_Grp='$idGrp'";
             if (!($sql = $this->mysqli->query($req))) {
                 error_log($this->mysqli->error);
@@ -475,6 +559,140 @@ class Service {
             }
         }
 
+        return true;
+    }
+    public function _updateCommunaute($old_nom, $new_nom, $admin, $type, $photo) {
+        if(empty($old_nom)){
+            return false;
+        }
+        $req = "SELECT ID_Com FROM Communaute WHERE NomCom='$old_nom'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+
+        $idCom = $rlt = $sql->fetch_assoc()["ID_Com"];
+        if(!empty($new_nom)) {
+            $req = "SELECT 1 FROM Communaute WHERE NomCom='$new_nom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            if ($sql->num_rows != 0) {
+                return false;
+            }
+            $req = "UPDATE Communaute SET NomCom='$new_nom' WHERE ID_Com='$idCom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        if(!empty($admin)) {
+            $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$admin'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            if ($sql->num_rows != 1) {
+                error_log("Impossible de creer la communaute : L'admin n'est pas un utilisateur existant");
+                return false;
+            }
+            $req = "UPDATE Communaute SET AdminCom='$admin' WHERE ID_Com='$idCom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        if(!empty($type)) {
+            $req = "UPDATE Communaute SET TypeCom='$type' WHERE ID_Com='$idCom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        if(!empty($photo)) {
+            $req = "UPDATE Communaute SET PhotoCom='$photo' WHERE ID_Com='$idCom'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+
+        return true;
+    }
+    public function _updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new) {
+        $req = "SELECT 1 FROM Match_Euro16 WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        if(empty($equipe1_new) || empty($equipe2_new) || empty($dateMatch_new)) {
+            $req = "UPDATE Match_Euro16 SET Score1='$score1', Score2='$score2' WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        } else {
+            $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', Score1='$score1', Score2='$score2', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+        }
+        return true;
+    }
+    public function _updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat) {
+        if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        if (!empty($groupe)) {
+            $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp='$groupe'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            $ID_Cla = $sql->fetch_object()->ID_Cla;
+        } else if (!empty($communaute)) {
+            $req = "SELECT ID_Cla FROM Communaute WHERE NomCom='$communaute'";
+            if (!($sql = $this->mysqli->query($req))) {
+                error_log($this->mysqli->error);
+                return false;
+            }
+            $ID_Cla = $sql->fetch_object()->ID_Cla;
+        } else if (empty($groupe) && empty($communaute)) {
+            $ID_Cla = "ID_GLOBAL";
+        }
+        $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        $ID_Mch = $sql->fetch_object()->ID_Mch;
+        $req = "UPDATE Pronostic SET Resultat='$resultat' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
         return true;
     }
 
@@ -518,13 +736,19 @@ class Service {
         $req = "SELECT 1 FROM Groupe WHERE AdminGrp='$id_facebook' AND NomGrp='$groupe'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
-            return false;
+            return -1;
         }
         if ($sql->num_rows == 1) {
             error_log("Impossible de supprimer l'utilisateur : Il est admin du groupe");
             return -1;
         }
-        $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND Groupe = '$groupe'";
+        $req = "SELECT ID_Grp FROM Groupe WHERE NomGrp='$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        $ID_Grp = $sql->fetch_object()->ID_Grp;
+        $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND Groupe = '$ID_Grp'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return -1;
@@ -544,7 +768,13 @@ class Service {
             error_log("Impossible de supprimer l'utilisateur : Il est admin de la communaute");
             return -1;
         }
-        $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$communaute'";
+        $req = "SELECT ID_Com FROM Communaute WHERE NomCom='$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        $ID_Com = $sql->fetch_object()->ID_Com;
+        $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$ID_Com'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return -1;

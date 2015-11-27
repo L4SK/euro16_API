@@ -586,6 +586,172 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "Le resultat ne devrait retourner aucun utilisateur de la communaute");
     }
 
+    public function test_getMatchsSuccess() {
+        $this->service->_creerMatch("France", "Portugal", "03-07-2016 20:00:00");
+        $this->service->_creerMatch("Italie", "Espagne", "06-07-2016 20:00:00");
+        $this->service->_creerMatch("Belgique", "Allemagne", "09-07-2016 20:00:00");
+        $expectedValue = array(
+            array("Equipe1" => "France",
+                "Equipe2" => "Portugal",
+                "Score1" => 0,
+                "Score2" => 0,
+                "DateMatch" => strtotime("03-07-2016 20:00:00")),
+            array("Equipe1" => "Italie",
+                "Equipe2" => "Espagne",
+                "Score1" => 0,
+                "Score2" => 0,
+                "DateMatch" => strtotime("06-07-2016 20:00:00")),
+            array("Equipe1" => "Belgique",
+                "Equipe2" => "Allemagne",
+                "Score1" => 0,
+                "Score2" => 0,
+                "DateMatch" => strtotime("09-07-2016 20:00:00")));
+
+        $expectedSize = 3;
+        $value = $this->service->_getMatchs();
+
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait contenir les matchs qui viennent d'etre crees");
+        $this->assertEquals($expectedSize, sizeOf($value), "Le resultat devrait contenir 3 groupes");
+    }
+    public function test_getMatchsVide() {
+        $this->assertTrue(empty($this->service->_getMatchs()), "La liste des matchs devrait etre vide");
+    }
+
+    public function test_getMatchSuccess() {
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $expectedValue = array(
+                "Equipe1" => $equipe1,
+                "Equipe2" => $equipe2,
+                "Score1" => 0,
+                "Score2" => 0,
+                "DateMatch" => strtotime($dateMatch));
+
+        $value = $this->service->_getMatch($equipe1, $equipe2, $dateMatch);
+
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait contenir le match qui vient d'etre cree");
+    }
+    public function test_getMatchEquipeInvalide() {
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_getMatch("EquipeInvalide", $equipe2, $dateMatch);
+
+        $this->assertFalse($value, "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
+    }
+    public function test_getMatchDateInvalide() {
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_getMatch($equipe1, $equipe2, "DateInvalide");
+
+        $this->assertFalse($value, "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
+    }
+
+    public function test_getPronosticSuccessGroupe() {
+        $groupe = "NomGroupe";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
+
+        $expectedValue = array(
+            "Utilisateur" => $id_facebook,
+            "Score1" => 0,
+            "Score2" => 0,
+            "Resultat" => 1
+        );
+        $value = $this->service->_getPronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match);
+        $this->assertEquals($expectedValue, $value, "La recuperation du pronostic aurait du reussir");
+    }
+    public function test_getPronosticSuccessCommunaute() {
+        $communaute = "NomCommunaute";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
+
+        $expectedValue = array(
+            "Utilisateur" => $id_facebook,
+            "Score1" => 0,
+            "Score2" => 0,
+            "Resultat" => 1
+        );
+        $value = $this->service->_getPronostic($id_facebook,"", $communaute, $equipe1, $equipe2, $date_match);
+        $this->assertEquals($expectedValue, $value, "La recuperation du pronostic aurait du reussir");
+    }
+    public function test_getPronosticSuccessGlobal() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $expectedValue = array(
+            "Utilisateur" => $id_facebook,
+            "Score1" => 0,
+            "Score2" => 0,
+            "Resultat" => 1
+        );
+        $value = $this->service->_getPronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match);
+        $this->assertEquals($expectedValue, $value, "La recuperation du pronostic aurait du reussir");
+    }
+    public function test_getPronosticUtilisateurInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $value = $this->service->_getPronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match);
+        $this->assertFalse($value, "La recuperation du pronostic n'aurait pas du reussir");
+    }
+    public function test_getPronosticMatchInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $value = $this->service->_getPronostic($id_facebook, "", "", "EquipeInexistante", $equipe2, $date_match);
+        $this->assertFalse($value, "La recuperation du pronostic n'aurait pas du reussir");
+    }
+
     public function test_updateUtilisateurSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
 
@@ -603,22 +769,190 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_updateGroupeSuccess() {
+        $groupe = "NomGroupe";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "PhotoGroupe");
 
-        $this->assertTrue($this->service->_updateGroupe("NomGroupe", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+        $this->assertTrue($this->service->_updateGroupe($groupe, "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
     }
     public function test_updateGroupeNomVide() {
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
         $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
 
-        $this->assertFalse($this->service->_updateGroupe("", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+        $this->assertFalse($this->service->_updateGroupe("", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du echoue à cause du nom vide");
     }
     public function test_updateGroupeNomInexistant() {
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
         $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
 
-        $this->assertFalse($this->service->_updateGroupe("NomGroupeInexistant", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
+        $this->assertFalse($this->service->_updateGroupe("NomGroupeInexistant", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du echoue a cause du non inexistant");
+    }
+
+    public function test_updateCommunauteSuccess() {
+        $communaute = "NomCommunaute";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoCommunaute", "default");
+
+        $this->assertTrue($this->service->_updateCommunaute($communaute, "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du reussir");
+    }
+    public function test_updateCommunauteNomVide() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute", "default");
+
+        $this->assertFalse($this->service->_updateCommunaute("", "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du echoue a cause du nom vide");
+    }
+    public function test_updateCommunauteNomInexistant() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute", "default");
+
+        $this->assertFalse($this->service->_updateCommunaute("NomCommunauteInexistant", "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du echoue a cause du nom vide");
+    }
+
+    public function test_updateMatchSuccess() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00");
+
+        $this->assertTrue($value, "L'update du match aurait du reussir");
+    }
+    public function test_updateMatchEquipeInvalide() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch("EquipeInexistante", "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00");
+
+        $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
+    }
+    public function test_updateMatchDateInvalide() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, "DateInexistante", "04-07-2016 15:00:00");
+
+        $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
+    }
+    public function test_updateMatchScoreSuccess() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, $dateMatch, "");
+
+        $this->assertTrue($value, "L'update du score du match aurait du reussir");
+    }
+    public function test_updateMatchScoreEquipeInvalide() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch("EquipeInexistante", "", $equipe2, "", 1, 2, $dateMatch, "");
+
+        $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
+    }
+    public function test_updateMatchScoreDateInvalide() {
+        $equipe1 = "A1";
+        $equipe2 = "B2";
+        $dateMatch = "03-07-2016 20:00:00";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+
+        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, "DateInexistante", "");
+
+        $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
+    }
+
+    public function test_updatePronosticSuccessGroupe() {
+        $groupe = "NomGroupe";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
+
+        $value = $this->service->_updatePronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match, 2);
+        $this->assertTrue($value, "La modification du pronostic aurait du reussir");
+    }
+    public function test_updatePronosticSuccessCommunaute() {
+        $communaute = "NomCommunaute";
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
+
+        $value = $this->service->_updatePronostic($id_facebook, "", $communaute, $equipe1, $equipe2, $date_match, 2);
+        $this->assertTrue($value, "La modification du pronostic aurait du reussir");
+    }
+    public function test_updatePronosticSuccessGlobal() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match, 2);
+        $this->assertTrue($value, "La modification du pronostic aurait du reussir");
+    }
+    public function test_updatePronosticUtilisateurInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $value = $this->service->_updatePronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match, 2);
+        $this->assertFalse($value, "La modification du pronostic n'aurait pas du reussir");
+    }
+    public function test_updatePronosticDateInexistante() {
+        $id_facebook = "FB123456uAdmin";
+        $equipe1 = "France";
+        $equipe2 = "Portugal";
+        $score1 = "";
+        $score2 = "";
+        $resultat = "1";
+        $date_match = "01-07-2015 10:00:00";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+
+        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, "DateInexistante", 2);
+        $this->assertFalse($value, "La modification du pronostic n'aurait pas du reussir");
     }
 
     public function test_deleteUtilisateurSuccess() {
