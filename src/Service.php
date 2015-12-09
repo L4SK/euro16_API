@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . "/../config.php";
+
 class Service {
 
     public $db = NULL;
@@ -8,14 +10,13 @@ class Service {
     public function __construct($environnement) {
         switch ($environnement) {
             case "dev":
-                $this->mysqli = new mysqli("localhost", "root", "", "euro16_dev");
+                $this->mysqli = new mysqli($GLOBALS['db_host_dev'], $GLOBALS['db_user_dev'], $GLOBALS['db_password_dev'], $GLOBALS['database_dev']);
                 break;
             case "test":
-                $this->mysqli = new mysqli("localhost", "root", "", "euro16_test");
+                $this->mysqli = new mysqli($GLOBALS['db_host_test'], $GLOBALS['db_user_test'], $GLOBALS['db_password_test'], $GLOBALS['database_test']);
                 break;
             case "prod":
-                // TODO stocker les identifiants de la base de prod proprement pour qu'ils ne soient en clair pas sur le repo
-                $this->mysqli = new mysqli("", "", "", "");
+                $this->mysqli = new mysqli($GLOBALS['db_host_prod'], $GLOBALS['db_user_prod'], $GLOBALS['db_password_prod'], $GLOBALS['database_prod']);
                 break;
             default:
                 error_log("Merci de specifier un environnement pour lier la bonne BDD");

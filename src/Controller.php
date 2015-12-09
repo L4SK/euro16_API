@@ -2,6 +2,7 @@
 
 require_once dirname(__FILE__) . "/../lib/Rest.inc.php";
 require_once dirname(__FILE__) . "/Service.php";
+require_once dirname(__FILE__) . "/../config.php";
 
 class Controller extends REST {
 
@@ -14,11 +15,23 @@ class Controller extends REST {
     }
 
     public function processApi() {
-        $func = strtolower(trim(str_replace("/", "", $_REQUEST['rquest'])));
-        if ((int)method_exists($this, $func) > 0)
-            $this->$func();
-        else
-            $this->response('', 404);                // If the method not exist with in this class, response would be "Page not found".
+        $cle = trim(str_replace("/", "", $_REQUEST['cle']));
+        $ipClient = $_SERVER['REMOTE_ADDR'];
+        // TODO idem que identifiants BDD
+        $mdp = $GLOBALS['motCle'];
+
+        $hash = md5($ipClient.$mdp);
+
+        if($cle === $hash){
+            $func = trim(str_replace("/", "", $_REQUEST['rquest']));
+            if ((int)method_exists($this, $func) > 0)
+                $this->$func();
+            else
+                $this->response('', 404);                // If the method not exist with in this class, response would be "Page not found".
+        }
+        else{
+            $this->response('',401);
+        }
     }
 
     private function creerUtilisateur() {
