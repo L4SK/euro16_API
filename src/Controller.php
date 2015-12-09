@@ -17,11 +17,10 @@ class Controller extends REST {
     public function processApi() {
         $cle = trim(str_replace("/", "", $_REQUEST['cle']));
         $ipClient = $_SERVER['REMOTE_ADDR'];
-        // TODO idem que identifiants BDD
         $mdp = $GLOBALS['motCle'];
 
         $hash = md5($ipClient.$mdp);
-
+        //echo $hash;
         if($cle === $hash){
             $func = trim(str_replace("/", "", $_REQUEST['rquest']));
             if ((int)method_exists($this, $func) > 0)
@@ -250,17 +249,22 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $id_facebook = $this->_request['id_facebook'];
-        $utilisateur = $this->service->_getUtilisateur($id_facebook);
-        switch (true) {
-            case $utilisateur == false:
-                $this->response('', 400);
-                break;
-            case sizeof($utilisateur) > 0:
-                $this->response($this->json($utilisateur), 200);
-                break;
-            default:
-                $this->response('', 204);
-                break;
+        if(!empty($id_facebook)) {
+            $utilisateur = $this->service->_getUtilisateur($id_facebook);
+            switch (true) {
+                case $utilisateur == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($utilisateur) > 0:
+                    $this->response($this->json($utilisateur), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
         }
     }
     private function getGroupe() {
@@ -268,17 +272,22 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $nom_groupe = $this->_request['groupe'];
-        $groupe = $this->service->_getGroupe($nom_groupe);
-        switch (true) {
-            case $groupe == false:
-                $this->response('', 400);
-                break;
-            case sizeof($groupe) > 0:
-                $this->response($this->json($groupe), 200);
-                break;
-            default:
-                $this->response('', 204);
-                break;
+        if(!empty($nom_groupe)) {
+            $groupe = $this->service->_getGroupe($nom_groupe);
+            switch (true) {
+                case $groupe == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($groupe) > 0:
+                    $this->response($this->json($groupe), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
         }
     }
     private function getCommunaute() {
@@ -286,8 +295,9 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $nom_communaute = $this->_request['communaute'];
-        $communaute = $this->service->_getCommunaute($nom_communaute);
-        switch (true) {
+        if(!empty($nom_communaute)) {
+            $communaute = $this->service->_getCommunaute($nom_communaute);
+            switch (true) {
             case $communaute == false:
                 $this->response('', 400);
                 break;
@@ -297,6 +307,245 @@ class Controller extends REST {
             default:
                 $this->response('', 204);
                 break;
+        }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getUtilisateursGroupe() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $nom_groupe = $this->_request['groupe'];
+        if(!empty($nom_groupe)) {
+            $utilisateurs = $this->service->_getUtilisateursGroupe($nom_groupe);
+            switch (true) {
+                case $utilisateurs == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($utilisateurs) > 0:
+                    $this->response($this->json($utilisateurs), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getUtilisateursCommunaute() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $nom_communaute = $this->_request['communaute'];
+        if(!empty($nom_communaute)) {
+            $utilisateurs = $this->service->_getUtilisateursGroupe($nom_communaute);
+            switch (true) {
+                case $utilisateurs == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($utilisateurs) > 0:
+                    $this->response($this->json($utilisateurs), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getMatchs() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $matchs = $this->service->_getMatchs();
+        switch (true) {
+            case $matchs == false:
+                $this->response('', 400);
+                break;
+            case sizeof($matchs) > 0:
+                $this->response($this->json($matchs), 200);
+                break;
+            default:
+                $this->response('', 204);
+                break;
+        }
+    }
+    private function getMatch() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        if(!empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
+            $match = $this->service->_getMatch($equipe1, $equipe2, $date_match);
+            switch (true) {
+                case $match == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($match) > 0:
+                    $this->response($this->json($match), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getPronostic() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $utilisateur = $this->_request['utilisateur'];
+        $groupe = $this->_request['groupe'];
+        $communaute = $this->_request['communaute'];
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        if(!empty($utilisateur) && !empty($groupe) && !empty($communaute) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
+            $pronostic = $this->service->_getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match);
+            switch (true) {
+                case $pronostic == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($pronostic) > 0:
+                    $this->response($this->json($pronostic), 200);
+                    break;
+                default:
+                    $this->response('', 204);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+
+    private function updateUtilisateur() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $nom = $this->_request['nom'];
+        $prenom = $this->_request['prenom'];
+        $photo = $this->_request['photo'];
+        $id_facebook = $this->_request['id_facebook'];
+        if (!empty($nom) && !empty($prenom) && !empty($photo) && !empty($id_facebook)) {
+            switch ($this->service->_updateUtilisateur($nom, $prenom, $photo, $id_facebook)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updateGroupe() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $old_nom = $this->_request['old_nom'];
+        $new_nom = $this->_request['new_nom'];
+        $admin = $this->_request['admin'];
+        $photo = $this->_request['photo'];
+        if (!empty($old_nom) && !empty($new_nom) && !empty($admin) && !empty($photo)) {
+            switch ($this->service->_updateGroupe($old_nom, $new_nom, $admin, $photo)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updateCommunaute() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $old_nom = $this->_request['old_nom'];
+        $new_nom = $this->_request['new_nom'];
+        $admin = $this->_request['admin'];
+        $type = $this->_request['type'];
+        $photo = $this->_request['photo'];
+        if (!empty($old_nom) && !empty($new_nom) && !empty($admin) && !empty($type) && !empty($photo)) {
+            switch ($this->service->_updateCommunaute($old_nom, $new_nom, $admin, $type, $photo)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updateMatch() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $equipe1_old = $this->_request['equipe1_old'];
+        $equipe1_new = $this->_request['equipe1_new'];
+        $equipe2_old = $this->_request['equipe2_old'];
+        $equipe2_new = $this->_request['equipe2_new'];
+        $score1 = $this->_request['score1'];
+        $score2 = $this->_request['score2'];
+        $dateMatch_old = $this->_request['dateMatch_old'];
+        $dateMatch_new = $this->_request['dateMatch_new'];
+        if (!empty($equipe1_old) && !empty($equipe1_new) && !empty($equipe2_old) && !empty($equipe2_new) && !empty($score1) && !empty($score2) && !empty($dateMatch_old) && !empty($dateMatch_new)) {
+            switch ($this->service->_updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updatePronostic() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $utilisateur = $this->_request['utilisateur'];
+        $groupe = $this->_request['groupe'];
+        $communaute = $this->_request['communaute'];
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        $resultat = $this->_request['resultat'];
+        if (!empty($utilisateur) && !empty($groupe) && !empty($communaute) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat) && !empty($dateMatch_new)) {
+            switch ($this->service->_updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
         }
     }
 

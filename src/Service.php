@@ -423,7 +423,7 @@ class Service {
         }
         return $result;
     }
-    public function _getMatch($equipe1,$equipe2, $dateMatch) {
+    public function _getMatch($equipe1, $equipe2, $dateMatch) {
         if(empty($equipe1) || empty($equipe2) || empty($dateMatch)) {
             return false;
         }
