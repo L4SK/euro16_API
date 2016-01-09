@@ -1,8 +1,8 @@
 <?php
 
-require_once('vendor/autoload.php');
+require_once('../../vendor/autoload.php');
 
-$GLOBALS['api_url'] = 'http://localhost:8080/index.php?rquest=';
+$GLOBALS['api_url'] = 'http://localhost:63342/euro16_API/index.php?rquest=';
 
 class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
@@ -12,26 +12,16 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      * @before
      */
     public function setup() {
-        $this->client = new GuzzleHttp\Client([
-            'base_url' => $GLOBALS['api_url'],
-            'defaults' => ['exceptions' => false]
-        ]);
+        $this->client = new GuzzleHttp\Client();
     }
 
-//    public function testEndpointGetUtilisateursSuccess() {
-//        $response = $this->client->request('GET', 'getUtilisateurs');
-//
-//        $this->assertEquals(200, $response->getStatusCode());
-//
-//        $data = json_decode($response->getBody());
-//
-//        $this->assertArrayHasKey('NomUti', $data);
-//        $this->assertArrayHasKey('PrenomUti', $data);
-//        $this->assertArrayHasKey('PhotoUti', $data);
-//        $this->assertArrayHasKey('ID_Facebook', $data);
-//    }
-    public function testStupid() {
-        $this->assertTrue(true);
+    /**
+     * Methodes utilisables pour executer les requetes disponibles ici (Rubrique : "Requests Methods") : https://guzzle.readthedocs.org/en/guzzle4/http-messages.html
+     */
+
+    public function testEndpointGetUtilisateursSuccess() {
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=e5abee460e9afa6f5dbbd2978df1be82');
+        $this->assertEquals(200, $requete->getStatusCode());
     }
 }
 
