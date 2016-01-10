@@ -1,6 +1,7 @@
 <?php
 
 require_once('../../vendor/autoload.php');
+require_once('../../config.php');
 
 $GLOBALS['api_url'] = 'http://localhost:63342/euro16_API/index.php?rquest=';
 
@@ -20,7 +21,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      */
 
     public function testEndpointGetUtilisateursSuccess() {
-        $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=e5abee460e9afa6f5dbbd2978df1be82');
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
     }
 }
