@@ -199,14 +199,17 @@ class Controller extends REST {
         }
         $utilisateurs = $this->service->_getUtilisateurs();
         switch (true) {
-            case $utilisateurs == false:
-                $this->response('', 400);
-                break;
             case sizeof($utilisateurs) > 0:
                 $this->response($this->json($utilisateurs), 200);
                 break;
-            default:
+            case is_array($utilisateurs):
                 $this->response('', 204);
+                break;
+            case $utilisateurs == false:
+                $this->response('', 400);
+                break;
+            default:
+                $this->response('', 400);
                 break;
         }
     }
