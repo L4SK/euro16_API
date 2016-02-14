@@ -625,8 +625,8 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $expectedValue = array(
                 "Equipe1" => $equipe1,
                 "Equipe2" => $equipe2,
-                "Score1" => 0,
-                "Score2" => 0,
+                "Score1" => NULL,
+                "Score2" => NULL,
                 "DateMatch" => strtotime($dateMatch));
 
         $value = $this->service->_getMatch($equipe1, $equipe2, $dateMatch);
@@ -889,7 +889,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
 
-        $value = $this->service->_updatePronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match, 2);
+        $value = $this->service->_updatePronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match, 2, '', '');
         $this->assertTrue($value, "La modification du pronostic aurait du reussir");
     }
     public function test_updatePronosticSuccessCommunaute() {
@@ -906,7 +906,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
 
-        $value = $this->service->_updatePronostic($id_facebook, "", $communaute, $equipe1, $equipe2, $date_match, 2);
+        $value = $this->service->_updatePronostic($id_facebook, "", $communaute, $equipe1, $equipe2, $date_match, 2, '', '');
         $this->assertTrue($value, "La modification du pronostic aurait du reussir");
     }
     public function test_updatePronosticSuccessGlobal() {
@@ -921,7 +921,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
-        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match, 2);
+        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match, 2, '', '');
         $this->assertTrue($value, "La modification du pronostic aurait du reussir");
     }
     public function test_updatePronosticUtilisateurInexistant() {
@@ -936,7 +936,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
-        $value = $this->service->_updatePronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match, 2);
+        $value = $this->service->_updatePronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match, 2, '', '');
         $this->assertFalse($value, "La modification du pronostic n'aurait pas du reussir");
     }
     public function test_updatePronosticDateInexistante() {
@@ -951,7 +951,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
-        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, "DateInexistante", 2);
+        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, "DateInexistante", 2, '', '');
         $this->assertFalse($value, "La modification du pronostic n'aurait pas du reussir");
     }
 

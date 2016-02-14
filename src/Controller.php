@@ -33,6 +33,25 @@ class Controller extends REST {
         }
     }
 
+    private function deleteAll() {
+        // Cross validation if the request method is DELETE else it will return "Not Acceptable" status
+        if ($this->get_request_method() != "DELETE") {
+            $this->response('', 406);
+        }
+        $suppression = $this->service->_deleteAll();
+        switch (true) {
+            case $suppression > 0:
+                $this->response('', 200);
+                break;
+            case $suppression == 0:
+                $this->response('', 304);
+                break;
+            default:
+                $this->response('', 500);
+                break;
+        }
+    }
+
     private function creerUtilisateur() {
         if ($this->get_request_method() != "POST") {
             $this->response('', 406);
@@ -159,7 +178,7 @@ class Controller extends REST {
         $id_facebook = $this->_request['id_facebook'];
         $groupe = $this->_request['groupe'];
         if (!empty($id_facebook) && !empty($groupe)) {
-            switch ($this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe)) {
+            switch ($rep = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe)) {
                 case true:
                     $this->response('', 201);
                     break;
@@ -219,14 +238,17 @@ class Controller extends REST {
         }
         $groupe = $this->service->_getGroupes();
         switch (true) {
-            case $groupe == false:
-                $this->response('', 400);
-                break;
             case sizeof($groupe) > 0:
                 $this->response($this->json($groupe), 200);
                 break;
-            default:
+            case is_array($groupe):
                 $this->response('', 204);
+                break;
+            case $groupe == false:
+                $this->response('', 400);
+                break;
+            default:
+                $this->response('', 400);
                 break;
         }
     }
@@ -414,7 +436,7 @@ class Controller extends REST {
         $equipe1 = $this->_request['equipe1'];
         $equipe2 = $this->_request['equipe2'];
         $date_match = $this->_request['date_match'];
-        if(!empty($utilisateur) && !empty($groupe) && !empty($communaute) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
+        if(!empty($utilisateur) && (!empty($groupe) || !empty($communaute)) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
             $pronostic = $this->service->_getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match);
             switch (true) {
                 case $pronostic == false:
@@ -424,7 +446,7 @@ class Controller extends REST {
                     $this->response($this->json($pronostic), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response($pronostic, 204);
                     break;
             }
         } else {
@@ -512,7 +534,7 @@ class Controller extends REST {
         $score2 = $this->_request['score2'];
         $dateMatch_old = $this->_request['dateMatch_old'];
         $dateMatch_new = $this->_request['dateMatch_new'];
-        if (!empty($equipe1_old) && !empty($equipe1_new) && !empty($equipe2_old) && !empty($equipe2_new) && !empty($score1) && !empty($score2) && !empty($dateMatch_old) && !empty($dateMatch_new)) {
+        if (!empty($equipe1_old) && !empty($equipe1_new) && !empty($equipe2_old) && !empty($equipe2_new) && !empty($dateMatch_old) && !empty($dateMatch_new)) {
             switch ($this->service->_updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new)) {
                 case true:
                     $this->response('', 200);
@@ -530,15 +552,17 @@ class Controller extends REST {
         if ($this->get_request_method() != "PUT") {
             $this->response('', 406);
         }
-        $utilisateur = $this->_request['utilisateur'];
+        $utilisateur = $this->_request['id_facebook'];
         $groupe = $this->_request['groupe'];
         $communaute = $this->_request['communaute'];
         $equipe1 = $this->_request['equipe1'];
         $equipe2 = $this->_request['equipe2'];
         $date_match = $this->_request['date_match'];
         $resultat = $this->_request['resultat'];
-        if (!empty($utilisateur) && !empty($groupe) && !empty($communaute) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat) && !empty($dateMatch_new)) {
-            switch ($this->service->_updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat)) {
+        $score1 = $this->_request['score1'];
+        $score2 = $this->_request['score2'];
+        if (!empty($utilisateur) && (!empty($groupe) || !empty($communaute)) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat)) {
+            switch ($this->service->_updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2)) {
                 case true:
                     $this->response('', 200);
                     break;

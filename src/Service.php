@@ -28,6 +28,28 @@ class Service {
         }
     }
 
+    /**
+     * Uniquement utilisee pour les tests d'integration
+     */
+    public function _deleteAll() {
+        $req = "DELETE FROM bareme;";
+        $req .= "DELETE FROM classement;";
+        $req .= "DELETE FROM communaute;";
+        $req .= "DELETE FROM groupe;";
+        $req .= "DELETE FROM match_euro16;";
+        $req .= "DELETE FROM participe;";
+        $req .= "DELETE FROM pronostic;";
+        $req .= "DELETE FROM utilisateur;";
+        $req .= "DELETE FROM bareme;";
+        $req .= "DELETE FROM utilisateur_communaute;";
+        $req .= "DELETE FROM utilisateur_groupe;";
+        if (!$this->mysqli->multi_query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
+        return $this->mysqli->more_results();
+    }
+
     public function _creerUtilisateur($nom, $prenom, $photo, $id_facebook) {
         if (empty($nom) || empty($prenom) || empty($id_facebook)) {
             return false;
@@ -119,7 +141,7 @@ class Service {
             error_log("Impossible de creer le match : deja present en base");
             return false;
         }
-        $req = "INSERT INTO Match_Euro16(Equipe1, Equipe2, Score1, Score2, DateMatch) VALUES ('$equipe1', '$equipe2', '', '', STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s'))";
+        $req = "INSERT INTO Match_Euro16(Equipe1, Equipe2, DateMatch) VALUES ('$equipe1', '$equipe2', STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s'))";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -173,7 +195,11 @@ class Service {
             return false;
         }
 
-        $req = "INSERT INTO Pronostic(Utilisateur, Score1, Score2, ID_Mch, Resultat, ID_Cla) VALUES ('$id_facebook', '$score1', '$score2', '$ID_Mch', '$resultat', '$ID_Cla')";
+        if(empty($score1) || empty($score2)){
+            $req = "INSERT INTO Pronostic(Utilisateur, ID_Mch, Resultat, ID_Cla) VALUES ('$id_facebook', '$ID_Mch', '$resultat', '$ID_Cla')";
+        } else {
+            $req = "INSERT INTO Pronostic(Utilisateur, Score1, Score2, ID_Mch, Resultat, ID_Cla) VALUES ('$id_facebook', '$score1', '$score2', '$ID_Mch', '$resultat', '$ID_Cla')";
+        }
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -643,15 +669,23 @@ class Service {
                 return false;
             }
         } else {
-            $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', Score1='$score1', Score2='$score2', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
+            if(!empty($score1) && !empty($score2)) {
+                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', Score1='$score1', Score2='$score2', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+                if (!($sql = $this->mysqli->query($req))) {
+                    error_log($this->mysqli->error);
+                    return false;
+                }
+            } else {
+                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+                if (!($sql = $this->mysqli->query($req))) {
+                    error_log($this->mysqli->error);
+                    return false;
+                }
             }
         }
         return true;
     }
-    public function _updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat) {
+    public function _updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2) {
         if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
             return false;
         }
@@ -689,7 +723,11 @@ class Service {
             return false;
         }
         $ID_Mch = $sql->fetch_object()->ID_Mch;
-        $req = "UPDATE Pronostic SET Resultat='$resultat' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        if(empty($score1) || empty($score2)) {
+            $req = "UPDATE Pronostic SET Resultat='$resultat' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        } else {
+            $req = "UPDATE Pronostic SET Resultat='$resultat', Score1='$score1', Score2='$score2' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        }
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
