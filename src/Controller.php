@@ -367,7 +367,7 @@ class Controller extends REST {
         }
         $nom_communaute = $this->_request['communaute'];
         if(!empty($nom_communaute)) {
-            $utilisateurs = $this->service->_getUtilisateursGroupe($nom_communaute);
+            $utilisateurs = $this->service->_getUtilisateursCommunaute($nom_communaute);
             switch (true) {
                 case $utilisateurs == false:
                     $this->response('', 400);
