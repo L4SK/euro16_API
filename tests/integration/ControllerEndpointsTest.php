@@ -29,15 +29,16 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
     /**
      * 1er test :
-     * - post utilisateur
-     * - get utilisateur
-     * - put utilisateur
-     * - get utilisateur
-     * - delete utilisateur
-     * - get utilisateur
+     * - Creation d'un utilisateur
+     * - On recupere les utilisateurs
+     * - On modifie un utilisateur
+     * - On recupere les utilisateurs
+     * - On supprime un utilisateur
+     * - On recupere les utilisateurs
      */
 
     public function testEndpointGestionUtilisateur() {
+        // Creation d'un utilisateur
         $nom = "NomTest";
         $prenom = "PrenomTest";
         $photo = "PhotoTest";
@@ -53,9 +54,13 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->assertEquals(201, $requete->getStatusCode());
+
+        // On recupere les utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook))), (string)$requete->getBody());
+
+        // On modifie un utilisateur
         $nom = "NomModif";
         $prenom = "PrenomModif";
         $photo = "PhotoModif";
@@ -68,10 +73,16 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             ]]
         );
         $this->assertEquals(200, $requete->getStatusCode());
+
+        // On recupere les utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook))), (string)$requete->getBody());
+
+        // On supprime un utilisateur
         $this->client->delete($GLOBALS['api_url'] . 'deleteUtilisateur&cle=' . $GLOBALS["cle"] . '&id_facebook=' . $id_facebook);
+
+        // On recupere les utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
@@ -131,12 +142,14 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France" ;
         $equipe2 = "Roumanie";
         $date_match = "03-07-2016 20:00:00";
+        $groupe = "A";
         $requete = $this->client->post($GLOBALS['api_url'] . 'creerMatch&cle=' . $GLOBALS["cle"],
             array(
                 "json" => array(
                     "equipe1" => $equipe1,
                     "equipe2" => $equipe2,
-                    "date_match" => $date_match
+                    "date_match" => $date_match,
+                    "groupe" => $groupe
                 )
             )
         );
@@ -145,7 +158,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les matchs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getMatchs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1, "Equipe2" => $equipe2, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match)))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1, "Equipe2" => $equipe2, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match), "Groupe" => $groupe))), (string)$requete->getBody());
 
         // On modifie le match
         $equipe1_new = "Espagne";
@@ -160,7 +173,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 "score1" => NULL,
                 "score2" => NULL,
                 "dateMatch_old" => $date_match,
-                "dateMatch_new" => $date_match_new
+                "dateMatch_new" => $date_match_new,
+                "groupe" => "B"
             ]]
         );
         $this->assertEquals(200, $requete->getStatusCode());
@@ -168,7 +182,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les matchs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getMatchs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new)))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new), "Groupe" => "B"))), (string)$requete->getBody());
 
         // On creer un groupe
         $nomGroupe = "NomGroupe";
@@ -229,7 +243,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             array(
                 "json" => array(
                     "id_facebook" => $idFacebookUser,
-                    "groupe" => $nomGroupeModif
+                    "groupe" => $nomGroupeModif,
+                    "statut" => 2
                 )
             )
         );
@@ -238,7 +253,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les utilisateurs du groupe
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateursGroupe&cle=' . $GLOBALS["cle"] . '&groupe=' . $nomGroupeModif);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook), array("NomUti" => $nomUser, "PrenomUti" => $prenomUser, "PhotoUti" => $photoUser, "ID_Facebook" => $idFacebookUser))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook, "Statut" => "1"), array("NomUti" => $nomUser, "PrenomUti" => $prenomUser, "PhotoUti" => $photoUser, "ID_Facebook" => $idFacebookUser, "Statut" => "2"))), (string)$requete->getBody());
 
         // On creer un pronostic d'un utilisateur dans un groupe
         $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"],
@@ -308,7 +323,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les utilisateurs du groupe
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateursGroupe&cle=' . $GLOBALS["cle"] . '&groupe=' . $nomGroupeModif);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook, "Statut" => "1"))), (string)$requete->getBody());
 
         // On supprime le groupe
         $requete = $this->client->delete($GLOBALS['api_url'] . 'deleteGroupe&cle=' . $GLOBALS["cle"]
@@ -389,12 +404,14 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France" ;
         $equipe2 = "Roumanie";
         $date_match = "03-07-2016 20:00:00";
+        $groupe = "A";
         $requete = $this->client->post($GLOBALS['api_url'] . 'creerMatch&cle=' . $GLOBALS["cle"],
             array(
                 "json" => array(
                     "equipe1" => $equipe1,
                     "equipe2" => $equipe2,
-                    "date_match" => $date_match
+                    "date_match" => $date_match,
+                    "groupe" => $groupe
                 )
             )
         );
@@ -403,7 +420,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les matchs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getMatchs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1, "Equipe2" => $equipe2, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match)))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1, "Equipe2" => $equipe2, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match), "Groupe" => $groupe))), (string)$requete->getBody());
 
         // On modifie le match
         $equipe1_new = "Espagne";
@@ -418,7 +435,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 "score1" => NULL,
                 "score2" => NULL,
                 "dateMatch_old" => $date_match,
-                "dateMatch_new" => $date_match_new
+                "dateMatch_new" => $date_match_new,
+                "groupe" => "B"
             ]]
         );
         $this->assertEquals(200, $requete->getStatusCode());
@@ -426,7 +444,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les matchs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getMatchs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new)))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new), "Groupe" => "B"))), (string)$requete->getBody());
 
         // On creer une communaute
         $nomCommunaute = "NomCommunaute";
@@ -490,7 +508,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             array(
                 "json" => array(
                     "id_facebook" => $idFacebookUser,
-                    "communaute" => $nomCommunauteModif
+                    "communaute" => $nomCommunauteModif,
+                    "statut" => 2
                 )
             )
         );
@@ -499,7 +518,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les utilisateurs de la communaute
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateursCommunaute&cle=' . $GLOBALS["cle"] . '&communaute=' . $nomCommunauteModif);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook), array("NomUti" => $nomUser, "PrenomUti" => $prenomUser, "PhotoUti" => $photoUser, "ID_Facebook" => $idFacebookUser))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook, "Statut" => "1"), array("NomUti" => $nomUser, "PrenomUti" => $prenomUser, "PhotoUti" => $photoUser, "ID_Facebook" => $idFacebookUser, "Statut" => "2"))), (string)$requete->getBody());
 
         // On creer un pronostic d'un utilisateur dans une communaute
         $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"],
@@ -569,7 +588,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         // On recupere les utilisateurs de la communaute
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateursCommunaute&cle=' . $GLOBALS["cle"] . '&communaute=' . $nomCommunauteModif);
         $this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook))), (string)$requete->getBody());
+        $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "ID_Facebook" => $id_facebook, "Statut" => "1"))), (string)$requete->getBody());
 
         // On supprime la communaute
         $requete = $this->client->delete($GLOBALS['api_url'] . 'deleteCommunaute&cle=' . $GLOBALS["cle"]

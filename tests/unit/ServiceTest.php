@@ -128,22 +128,24 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France";
         $equipe2 = "Portugal";
         $date_match = "01-07-2016 20:00:00";
+        $groupe = "A";
 
         $expectedValue = true;
-        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->assertEquals($expectedValue, $value, "La creation de match aurait du reussir");
     }
     public function test_creerMatchFailureDuplique() {
         $equipe1 = "France";
         $equipe2 = "Portugal";
         $date_match = "01-07-2016 20:00:00";
+        $groupe = "A";
 
         $expectedValue = false;
 
         // Premiere insertion
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         // Deuxieme insertion
-        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $value = $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $this->assertEquals($expectedValue, $value, "La creation de match aurait du echouer pour doublon");
     }
@@ -157,9 +159,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = true;
         $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
@@ -174,9 +177,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = true;
         $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
@@ -190,8 +194,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = true;
         $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
@@ -205,7 +210,8 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = false;
         $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
@@ -233,8 +239,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "B";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = false;
         $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
@@ -250,7 +257,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
 
         $expectedValue = true;
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du reussir");
     }
     public function test_ajouterUtilisateurGroupeFailureDuplique() {
@@ -264,9 +271,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $expectedValue = false;
 
         // Premiere insertion
-        $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe, 1);
         // Deuxieme insertion
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe);
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echoue pour doublon");
     }
     public function test_ajouterUtilisateurGroupeFailureUtilisateurInexistant() {
@@ -275,7 +282,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
 
         $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurGroupe("ID_INEXISTANT", $groupe);
+        $value = $this->service->_ajouterUtilisateurGroupe("ID_INEXISTANT", $groupe, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour utilisateur inexistant");
     }
     public function test_ajouterUtilisateurGroupeFailureGroupeInexistant() {
@@ -283,7 +290,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
 
         $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, "NOM_INEXISTANT");
+        $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, "NOM_INEXISTANT", 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au groupe aurait du echouer pour groupe inexistant");
     }
 
@@ -296,7 +303,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
 
         $expectedValue = true;
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du reussir");
     }
     public function test_ajouterUtilisateurCommunauteFailureDuplique() {
@@ -310,18 +317,18 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $expectedValue = false;
 
         // Premiere insertion
-        $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute, 1);
         // Deuxieme insertion
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute);
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echoue pour doublon");
     }
     public function test_ajouterUtilisateurCommunauteFailureUtilisateurInexistant() {
-        $groupe = "NomGroupe";
+        $communaute = "NomCommunaute";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerCommunaute($groupe, "FB123456uAdmin", "Photo1", "default");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
 
         $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurCommunaute("ID_INEXISTANT", $groupe);
+        $value = $this->service->_ajouterUtilisateurCommunaute("ID_INEXISTANT", $communaute, 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour utilisateur inexistant");
     }
     public function test_ajouterUtilisateurCommunauteFailureCommunauteInexistante() {
@@ -329,7 +336,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
 
         $expectedValue = false;
-        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, "NOM_INEXISTANT");
+        $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, "NOM_INEXISTANT", 1);
         $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur a la communaute aurait du echouer pour communaute inexistante");
     }
 
@@ -516,24 +523,27 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
-        $this->service->_ajouterUtilisateurGroupe("FB123456u1", $groupe);
-        $this->service->_ajouterUtilisateurGroupe("FB123456u2", $groupe);
+        $this->service->_ajouterUtilisateurGroupe("FB123456u1", $groupe, 1);
+        $this->service->_ajouterUtilisateurGroupe("FB123456u2", $groupe, 1);
 
         $expectedValue = array(
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
-                "ID_Facebook" => "FB123456u1"
+                "ID_Facebook" => "FB123456u1",
+                "Statut" => 1
             ),
             array("NomUti" => "Nom2",
                 "PrenomUti" => "Prenom2",
                 "PhotoUti" => "Photo2",
-                "ID_Facebook" => "FB123456u2"
+                "ID_Facebook" => "FB123456u2",
+                "Statut" => 1
             ),
             array("NomUti" => "NomAdmin",
                 "PrenomUti" => "PrenomAdmin",
                 "PhotoUti" => "PhotoAdmin",
-                "ID_Facebook" => "FB123456uAdmin"
+                "ID_Facebook" => "FB123456uAdmin",
+                "Statut" => 1
             )
         );
         $value = $this->service->_getUtilisateursGroupe($groupe);
@@ -554,24 +564,27 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoCommunaute1", "default");
-        $this->service->_ajouterUtilisateurCommunaute("FB123456u1", $communaute);
-        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $communaute);
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u1", $communaute, 1);
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $communaute, 1);
 
         $expectedValue = array(
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
-                "ID_Facebook" => "FB123456u1"
+                "ID_Facebook" => "FB123456u1",
+                "Statut" => 1
             ),
             array("NomUti" => "Nom2",
                 "PrenomUti" => "Prenom2",
                 "PhotoUti" => "Photo2",
-                "ID_Facebook" => "FB123456u2"
+                "ID_Facebook" => "FB123456u2",
+                "Statut" => 1
             ),
             array("NomUti" => "NomAdmin",
                 "PrenomUti" => "PrenomAdmin",
                 "PhotoUti" => "PhotoAdmin",
-                "ID_Facebook" => "FB123456uAdmin"
+                "ID_Facebook" => "FB123456uAdmin",
+                "Statut" => 1
             )
         );
         $value = $this->service->_getUtilisateursCommunaute($communaute);
@@ -587,25 +600,28 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_getMatchsSuccess() {
-        $this->service->_creerMatch("France", "Portugal", "03-07-2016 20:00:00");
-        $this->service->_creerMatch("Italie", "Espagne", "06-07-2016 20:00:00");
-        $this->service->_creerMatch("Belgique", "Allemagne", "09-07-2016 20:00:00");
+        $this->service->_creerMatch("France", "Portugal", "03-07-2016 20:00:00", "A");
+        $this->service->_creerMatch("Italie", "Espagne", "06-07-2016 20:00:00", "B");
+        $this->service->_creerMatch("Belgique", "Allemagne", "09-07-2016 20:00:00", "C");
         $expectedValue = array(
             array("Equipe1" => "France",
                 "Equipe2" => "Portugal",
                 "Score1" => 0,
                 "Score2" => 0,
-                "DateMatch" => strtotime("03-07-2016 20:00:00")),
+                "DateMatch" => strtotime("03-07-2016 20:00:00"),
+                "Groupe" => "A"),
             array("Equipe1" => "Italie",
                 "Equipe2" => "Espagne",
                 "Score1" => 0,
                 "Score2" => 0,
-                "DateMatch" => strtotime("06-07-2016 20:00:00")),
+                "DateMatch" => strtotime("06-07-2016 20:00:00"),
+                "Groupe" => "B"),
             array("Equipe1" => "Belgique",
                 "Equipe2" => "Allemagne",
                 "Score1" => 0,
                 "Score2" => 0,
-                "DateMatch" => strtotime("09-07-2016 20:00:00")));
+                "DateMatch" => strtotime("09-07-2016 20:00:00"),
+                "Groupe" => "C"));
 
         $expectedSize = 3;
         $value = $this->service->_getMatchs();
@@ -621,13 +637,15 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France";
         $equipe2 = "Portugal";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
         $expectedValue = array(
                 "Equipe1" => $equipe1,
                 "Equipe2" => $equipe2,
                 "Score1" => NULL,
                 "Score2" => NULL,
-                "DateMatch" => strtotime($dateMatch));
+                "DateMatch" => strtotime($dateMatch),
+                "Groupe" => $groupe);
 
         $value = $this->service->_getMatch($equipe1, $equipe2, $dateMatch);
 
@@ -637,7 +655,8 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France";
         $equipe2 = "Portugal";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
         $value = $this->service->_getMatch("EquipeInvalide", $equipe2, $dateMatch);
 
@@ -647,7 +666,8 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "France";
         $equipe2 = "Portugal";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
         $value = $this->service->_getMatch($equipe1, $equipe2, "DateInvalide");
 
@@ -663,9 +683,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
 
         $expectedValue = array(
@@ -686,9 +707,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
 
         $expectedValue = array(
@@ -708,8 +730,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $expectedValue = array(
@@ -729,8 +752,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $value = $this->service->_getPronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match);
@@ -744,8 +768,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $value = $this->service->_getPronostic($id_facebook, "", "", "EquipeInexistante", $equipe2, $date_match);
@@ -818,9 +843,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00");
+        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00", "B");
 
         $this->assertTrue($value, "L'update du match aurait du reussir");
     }
@@ -828,9 +854,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch("EquipeInexistante", "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00");
+        $value = $this->service->_updateMatch("EquipeInexistante", "Espagne", $equipe2, "Italie", 1, 2, $dateMatch, "04-07-2016 15:00:00", "B");
 
         $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
     }
@@ -838,9 +865,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, "DateInexistante", "04-07-2016 15:00:00");
+        $value = $this->service->_updateMatch($equipe1, "Espagne", $equipe2, "Italie", 1, 2, "DateInexistante", "04-07-2016 15:00:00", "B");
 
         $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
     }
@@ -848,9 +876,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, $dateMatch, "");
+        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, $dateMatch, "", "B");
 
         $this->assertTrue($value, "L'update du score du match aurait du reussir");
     }
@@ -858,9 +887,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch("EquipeInexistante", "", $equipe2, "", 1, 2, $dateMatch, "");
+        $value = $this->service->_updateMatch("EquipeInexistante", "", $equipe2, "", 1, 2, $dateMatch, "", "B");
 
         $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
     }
@@ -868,9 +898,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $equipe1 = "A1";
         $equipe2 = "B2";
         $dateMatch = "03-07-2016 20:00:00";
-        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch);
+        $groupe = "A";
+        $this->service->_creerMatch($equipe1, $equipe2, $dateMatch, $groupe);
 
-        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, "DateInexistante", "");
+        $value = $this->service->_updateMatch($equipe1, "", $equipe2, "", 1, 2, "DateInexistante", "", "B");
 
         $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
     }
@@ -884,9 +915,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
 
         $value = $this->service->_updatePronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match, 2, '', '');
@@ -901,9 +933,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
         $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
 
         $value = $this->service->_updatePronostic($id_facebook, "", $communaute, $equipe1, $equipe2, $date_match, 2, '', '');
@@ -917,8 +950,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match, 2, '', '');
@@ -932,8 +966,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $value = $this->service->_updatePronostic("UtilisateurInexistant", "", "", $equipe1, $equipe2, $date_match, 2, '', '');
@@ -947,8 +982,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
+        $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match);
+        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
         $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, "DateInexistante", 2, '', '');
@@ -1014,7 +1050,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
         $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
-        $this->service->_ajouterUtilisateurGroupe("FB123456u2", $nom);
+        $this->service->_ajouterUtilisateurGroupe("FB123456u2", $nom, 1);
 
         $expectedValue = 1;
         $value = $this->service->_deleteUtilisateurGroupe("FB123456u2", $nom);
@@ -1035,7 +1071,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
         $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
         $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
-        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $nom);
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $nom, 1);
 
         $expectedValue = 1;
         $value = $this->service->_deleteUtilisateurCommunaute("FB123456u2", $nom);

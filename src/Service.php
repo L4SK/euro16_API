@@ -99,7 +99,7 @@ class Service {
             return false;
         }
 
-        if (!$this->_ajouterUtilisateurGroupe($admin, $nom)) {
+        if (!$this->_ajouterUtilisateurGroupe($admin, $nom, 1)) {
             return false;
         }
         return true;
@@ -123,13 +123,13 @@ class Service {
             return false;
         }
 
-        if (!$this->_ajouterUtilisateurCommunaute($admin, $nom)) {
+        if (!$this->_ajouterUtilisateurCommunaute($admin, $nom, 1)) {
             return false;
         }
         return true;
     }
-    public function _creerMatch($equipe1, $equipe2, $date_match) {
-        if (empty($equipe1) || empty($equipe2) || empty($date_match)) {
+    public function _creerMatch($equipe1, $equipe2, $date_match, $groupe) {
+        if (empty($equipe1) || empty($equipe2) || empty($date_match) || empty($groupe)) {
             return false;
         }
         $req = "SELECT 1 FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
@@ -141,7 +141,7 @@ class Service {
             error_log("Impossible de creer le match : deja present en base");
             return false;
         }
-        $req = "INSERT INTO Match_Euro16(Equipe1, Equipe2, DateMatch) VALUES ('$equipe1', '$equipe2', STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s'))";
+        $req = "INSERT INTO Match_Euro16(Equipe1, Equipe2, DateMatch, Groupe) VALUES ('$equipe1', '$equipe2', STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s'), '$groupe')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -206,8 +206,8 @@ class Service {
         }
         return true;
     }
-    public function _ajouterUtilisateurGroupe($id_facebook, $groupe) {
-        if (empty($id_facebook) || empty($groupe)) {
+    public function _ajouterUtilisateurGroupe($id_facebook, $groupe, $statut) {
+        if (empty($id_facebook) || empty($groupe) || empty($statut)) {
             return false;
         }
         $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
@@ -244,15 +244,15 @@ class Service {
         }
         $id = $result['ID_Grp'];
 
-        $req = "INSERT INTO Utilisateur_Groupe(Utilisateur, Groupe) VALUES ('$id_facebook', '$id')";
+        $req = "INSERT INTO Utilisateur_Groupe(Utilisateur, Groupe, Statut) VALUES ('$id_facebook', '$id', '$statut')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
         }
         return true;
     }
-    public function _ajouterUtilisateurCommunaute($id_facebook, $communaute) {
-        if (empty($id_facebook) || empty($communaute)) {
+    public function _ajouterUtilisateurCommunaute($id_facebook, $communaute, $statut) {
+        if (empty($id_facebook) || empty($communaute) || empty($statut)) {
             return false;
         }
         $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
@@ -288,7 +288,7 @@ class Service {
         }
         $id = $result['ID_Com'];
 
-        $req = "INSERT INTO Utilisateur_Communaute(Utilisateur, Communaute) VALUES ('$id_facebook', '$id')";
+        $req = "INSERT INTO Utilisateur_Communaute(Utilisateur, Communaute, Statut) VALUES ('$id_facebook', '$id', '$statut')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -397,10 +397,10 @@ class Service {
             return false;
         }
 
-        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook IN (SELECT Utilisateur FROM Utilisateur_Groupe WHERE Groupe IN (SELECT ID_Grp FROM Groupe WHERE NomGrp='$groupe'))";
+        $req = "SELECT Utilisateur.*, Utilisateur_Groupe.Statut FROM Utilisateur JOIN Utilisateur_Groupe ON Utilisateur.ID_Facebook = Utilisateur_Groupe.Utilisateur";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
-            return false;
+            return "test";
         }
         if ($sql->num_rows > 0) {
             while ($rlt = $sql->fetch_assoc()) {
@@ -422,7 +422,7 @@ class Service {
             return false;
         }
 
-        $req = "SELECT * FROM Utilisateur WHERE ID_Facebook IN (SELECT Utilisateur FROM Utilisateur_Communaute WHERE Communaute IN (SELECT ID_Com FROM Communaute WHERE NomCom='$communaute'))";
+        $req = "SELECT Utilisateur.*, Utilisateur_Communaute.Statut FROM Utilisateur JOIN Utilisateur_Communaute ON Utilisateur.ID_Facebook = Utilisateur_Communaute.Utilisateur";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -435,7 +435,7 @@ class Service {
         return $result;
     }
     public function _getMatchs() {
-        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch FROM Match_Euro16";
+        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch, Groupe FROM Match_Euro16";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -453,7 +453,7 @@ class Service {
         if(empty($equipe1) || empty($equipe2) || empty($dateMatch)) {
             return false;
         }
-        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$dateMatch','%d-%m-%Y %H:%i:%s')";
+        $req = "SELECT Equipe1, Equipe2, Score1, Score2, DateMatch, Groupe FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$dateMatch','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -653,7 +653,7 @@ class Service {
 
         return true;
     }
-    public function _updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new) {
+    public function _updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new, $groupe) {
         $req = "SELECT 1 FROM Match_Euro16 WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -663,20 +663,20 @@ class Service {
             return false;
         }
         if(empty($equipe1_new) || empty($equipe2_new) || empty($dateMatch_new)) {
-            $req = "UPDATE Match_Euro16 SET Score1='$score1', Score2='$score2' WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+            $req = "UPDATE Match_Euro16 SET Score1='$score1', Score2='$score2', Groupe='$groupe' WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
             if (!($sql = $this->mysqli->query($req))) {
                 error_log($this->mysqli->error);
                 return false;
             }
         } else {
             if(!empty($score1) && !empty($score2)) {
-                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', Score1='$score1', Score2='$score2', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', Score1='$score1', Score2='$score2', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s'), Groupe='$groupe' WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
                 if (!($sql = $this->mysqli->query($req))) {
                     error_log($this->mysqli->error);
                     return false;
                 }
             } else {
-                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s') WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
+                $req = "UPDATE Match_Euro16 SET Equipe1='$equipe1_new', Equipe2='$equipe2_new', DateMatch=STR_TO_DATE('$dateMatch_new','%d-%m-%Y %H:%i:%s'), Groupe='$groupe' WHERE Equipe1='$equipe1_old' AND Equipe2='$equipe2_old' AND DateMatch=STR_TO_DATE('$dateMatch_old','%d-%m-%Y %H:%i:%s')";
                 if (!($sql = $this->mysqli->query($req))) {
                     error_log($this->mysqli->error);
                     return false;

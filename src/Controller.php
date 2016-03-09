@@ -130,8 +130,9 @@ class Controller extends REST {
         $equipe1 = $this->_request['equipe1'];
         $equipe2 = $this->_request['equipe2'];
         $date_match = $this->_request['date_match'];
-        if (!empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
-            switch ($this->service->_creerMatch($equipe1, $equipe2, $date_match)) {
+        $groupe = $this->_request['groupe'];
+        if (!empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($groupe)) {
+            switch ($this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe)) {
                 case true:
                     $this->response('', 201);
                     break;
@@ -177,8 +178,9 @@ class Controller extends REST {
         }
         $id_facebook = $this->_request['id_facebook'];
         $groupe = $this->_request['groupe'];
-        if (!empty($id_facebook) && !empty($groupe)) {
-            switch ($rep = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe)) {
+        $statut = $this->_request['statut'];
+        if (!empty($id_facebook) && !empty($groupe) && !empty($statut)) {
+            switch ($rep = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe, $statut)) {
                 case true:
                     $this->response('', 201);
                     break;
@@ -197,8 +199,9 @@ class Controller extends REST {
         }
         $id_facebook = $this->_request['id_facebook'];
         $communaute = $this->_request['communaute'];
+        $statut = $this->_request['statut'];
         if (!empty($id_facebook) && !empty($communaute)) {
-            switch ($this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute)) {
+            switch ($this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute, $statut)) {
                 case true:
                     $this->response('', 201);
                     break;
@@ -534,8 +537,9 @@ class Controller extends REST {
         $score2 = $this->_request['score2'];
         $dateMatch_old = $this->_request['dateMatch_old'];
         $dateMatch_new = $this->_request['dateMatch_new'];
-        if (!empty($equipe1_old) && !empty($equipe1_new) && !empty($equipe2_old) && !empty($equipe2_new) && !empty($dateMatch_old) && !empty($dateMatch_new)) {
-            switch ($this->service->_updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new)) {
+        $groupe = $this->_request['groupe'];
+        if (!empty($equipe1_old) && !empty($equipe1_new) && !empty($equipe2_old) && !empty($equipe2_new) && !empty($dateMatch_old) && !empty($dateMatch_new) && !empty($groupe)) {
+            switch ($this->service->_updateMatch($equipe1_old, $equipe1_new, $equipe2_old, $equipe2_new, $score1, $score2, $dateMatch_old, $dateMatch_new, $groupe)) {
                 case true:
                     $this->response('', 200);
                     break;
