@@ -1,5 +1,6 @@
 {
   "require": {
-    "guzzlehttp/guzzle": "~6.0"
+    "guzzlehttp/guzzle": "~6.0",
+    "phpunit/php-code-coverage": "dev-master#b8436b000263f6d72fbad1d36890e247ce84857e"
   }
 }

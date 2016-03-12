@@ -92,8 +92,13 @@ class Service {
             error_log("Impossible de creer le groupe : Le nom du groupe existe deja");
             return false;
         }
-
-        $req = "INSERT INTO Groupe(NomGrp, AdminGrp, PhotoGrp) VALUES ('$nom', '$admin', '$photo')";
+        $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $last_id = $this->mysqli->insert_id;
+        $req = "INSERT INTO Groupe(NomGrp, AdminGrp, PhotoGrp, ID_Cla) VALUES ('$nom', '$admin', '$photo', '$last_id')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -117,12 +122,17 @@ class Service {
             error_log("Impossible de creer la communaute : L'admin n'est pas un utilisateur existant");
             return false;
         }
-        $req = "INSERT INTO Communaute(NomCom, AdminCom, TypeCom, PhotoCom) VALUES ('$nom', '$admin', '$type', '$photo')";
+        $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
         }
-
+        $last_id = $this->mysqli->insert_id;
+        $req = "INSERT INTO Communaute(NomCom, AdminCom, TypeCom, PhotoCom, ID_Cla) VALUES ('$nom', '$admin', '$type', '$photo', '$last_id')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
         if (!$this->_ajouterUtilisateurCommunaute($admin, $nom, 1)) {
             return false;
         }
@@ -787,6 +797,11 @@ class Service {
             return -1;
         }
         $ID_Grp = $sql->fetch_object()->ID_Grp;
+        $req = "DELETE FROM Pronostic WHERE Utilisateur = '$id_facebook' AND ID_Cla = (SELECT ID_Cla FROM Groupe WHERE ID_Grp = '$ID_Grp')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
         $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND Groupe = '$ID_Grp'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
@@ -813,6 +828,11 @@ class Service {
             return -1;
         }
         $ID_Com = $sql->fetch_object()->ID_Com;
+        $req = "DELETE FROM Pronostic WHERE Utilisateur = '$id_facebook' AND ID_Cla = (SELECT ID_Cla FROM Communaute WHERE ID_Com = '$ID_Com')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return -1;
+        }
         $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$ID_Com'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
