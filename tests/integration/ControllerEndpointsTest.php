@@ -3,8 +3,6 @@
 require_once('../../vendor/autoload.php');
 require_once('../../config.php');
 
-$GLOBALS['api_url'] = 'http://localhost/euro16_API/index.php?rquest=';
-
 class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
     private $client;
@@ -14,6 +12,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      */
     public function setup() {
         $this->client = new GuzzleHttp\Client();
+        date_default_timezone_set('Europe/Paris');
     }
     /**
      * @after
@@ -90,29 +89,29 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
     /**
      * 2e test :
-     * - Création d'un utilisateur
-     * - On récupère la liste des utilisateurs
-     * - On créer un match
-     * - On récupère les matchs
+     * - Crï¿½ation d'un utilisateur
+     * - On rï¿½cupï¿½re la liste des utilisateurs
+     * - On crï¿½er un match
+     * - On rï¿½cupï¿½re les matchs
      * - On modifie le match
-     * - On récupère les matchs
-     * - On créer un groupe
-     * - On récupère les groupes
+     * - On rï¿½cupï¿½re les matchs
+     * - On crï¿½er un groupe
+     * - On rï¿½cupï¿½re les groupes
      * - On modifie le groupe
-     * - On récupère les groupes
-     * - On créer un nouvel utilisateur pour ajouter dans le groupe
+     * - On rï¿½cupï¿½re les groupes
+     * - On crï¿½er un nouvel utilisateur pour ajouter dans le groupe
      * - On ajoute l'utilisateur au groupe
-     * - On récupère les utilisateurs du groupe
-     * - On créer un pronostic d'un utilisateur dans un groupe
-     * - On récupère un pronostic d'un utilisateur dans un groupe
+     * - On rï¿½cupï¿½re les utilisateurs du groupe
+     * - On crï¿½er un pronostic d'un utilisateur dans un groupe
+     * - On rï¿½cupï¿½re un pronostic d'un utilisateur dans un groupe
      * - On modifie un pronostic d'un utilisateur dans un groupe
-     * - On récupère un pronostic d'un utilisateur dans un groupe
+     * - On rï¿½cupï¿½re un pronostic d'un utilisateur dans un groupe
      * - On supprime un utilisateur d'un groupe
-     * - On récupère les utilisateurs d'un groupe
+     * - On rï¿½cupï¿½re les utilisateurs d'un groupe
      * - On supprime un groupe
-     * - On récupère les groupes
+     * - On rï¿½cupï¿½re les groupes
      * - On supprime les utilisateurs
-     * - On vérifie qu'il n'y a plus d'utilisateurs
+     * - On vï¿½rifie qu'il n'y a plus d'utilisateurs
      */
 
     public function testEndpointGestionUtilisateurGroupePronostic() {
@@ -332,7 +331,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(200, $requete->getStatusCode());
 
-        // On récupère les groupes
+        // On rï¿½cupï¿½re les groupes
         $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupes&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(204, $requete->getStatusCode());
 
@@ -344,7 +343,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
 
-        // On vérifie qu'il n'y a plus d'utilisateurs
+        // On vï¿½rifie qu'il n'y a plus d'utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
@@ -352,29 +351,29 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
     /**
      * 3e test :
-     * - Création d'un utilisateur
-     * - On récupère la liste des utilisateurs
-     * - On créer un match
-     * - On récupère les matchs
+     * - Crï¿½ation d'un utilisateur
+     * - On rï¿½cupï¿½re la liste des utilisateurs
+     * - On crï¿½er un match
+     * - On rï¿½cupï¿½re les matchs
      * - On modifie le match
-     * - On récupère les matchs
-     * - On créer une communaute
-     * - On récupère les communautes
+     * - On rï¿½cupï¿½re les matchs
+     * - On crï¿½er une communaute
+     * - On rï¿½cupï¿½re les communautes
      * - On modifie la communaute
-     * - On récupère les communautes
-     * - On créer un nouvel utilisateur pour ajouter dans la communaute
+     * - On rï¿½cupï¿½re les communautes
+     * - On crï¿½er un nouvel utilisateur pour ajouter dans la communaute
      * - On ajoute l'utilisateur a la communaute
-     * - On récupère les utilisateurs de la communaute
-     * - On créer un pronostic d'un utilisateur dans une communaute
-     * - On récupère un pronostic d'un utilisateur dans une communaute
+     * - On rï¿½cupï¿½re les utilisateurs de la communaute
+     * - On crï¿½er un pronostic d'un utilisateur dans une communaute
+     * - On rï¿½cupï¿½re un pronostic d'un utilisateur dans une communaute
      * - On modifie un pronostic d'un utilisateur dans une communaute
-     * - On récupère un pronostic d'un utilisateur dans une communaute
+     * - On rï¿½cupï¿½re un pronostic d'un utilisateur dans une communaute
      * - On supprime un utilisateur d'une communaute
-     * - On récupère les utilisateurs d'une communaute
+     * - On rï¿½cupï¿½re les utilisateurs d'une communaute
      * - On supprime une communaute
-     * - On récupère les communautes
+     * - On rï¿½cupï¿½re les communautes
      * - On supprime les utilisateurs
-     * - On vérifie qu'il n'y a plus d'utilisateurs
+     * - On vï¿½rifie qu'il n'y a plus d'utilisateurs
      */
 
     public function testEndpointGestionUtilisateurCommunautePronostic() {
@@ -597,7 +596,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(200, $requete->getStatusCode());
 
-        // On récupère les communaute
+        // On rï¿½cupï¿½re les communaute
         $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupes&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(204, $requete->getStatusCode());
 
@@ -609,7 +608,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
 
-        // On vérifie qu'il n'y a plus d'utilisateurs
+        // On vï¿½rifie qu'il n'y a plus d'utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"]);
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
