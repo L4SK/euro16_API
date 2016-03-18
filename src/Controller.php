@@ -16,10 +16,10 @@ class Controller extends REST {
 
     public function processApi() {
         $cle = trim(str_replace("/", "", $_REQUEST['cle']));
-        $ipClient = $_SERVER['REMOTE_ADDR'];
+        $hostNameClient = gethostbyaddr($_SERVER['REMOTE_ADDR']);
         $mdp = $GLOBALS['motCle'];
 
-        $hash = md5($ipClient.$mdp);
+        $hash = md5($hostNameClient.$mdp);
         //echo $hash;
         if($cle === $hash){
             $func = trim(str_replace("/", "", $_REQUEST['rquest']));
