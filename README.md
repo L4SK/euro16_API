@@ -80,7 +80,7 @@ Composer permet de gérer les différentes dépendences du projet
         - Renommer l'archive par "composer"
         - Ajouter le dossier composer au PATH
         
-- PHPUnit s'execute alors simplement :
+- Composer s'execute alors simplement :
 
         > cd <racine_du_projet>
         > composer install
