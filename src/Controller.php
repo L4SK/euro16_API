@@ -261,6 +261,9 @@ class Controller extends REST {
         }
         $communaute = $this->service->_getCommunautes();
         switch (true) {
+            case sizeof($communaute) == 0:
+                $this->response('', 204);
+                break;
             case $communaute == false:
                 $this->response('', 400);
                 break;
@@ -268,7 +271,7 @@ class Controller extends REST {
                 $this->response($this->json($communaute), 200);
                 break;
             default:
-                $this->response('', 204);
+                $this->response('', 400);
                 break;
         }
     }
@@ -280,6 +283,9 @@ class Controller extends REST {
         if(!empty($id_facebook)) {
             $utilisateur = $this->service->_getUtilisateur($id_facebook);
             switch (true) {
+                case sizeof($utilisateur) == 0:
+                    $this->response('', 204);
+                    break;
                 case $utilisateur == false:
                     $this->response('', 400);
                     break;
@@ -287,7 +293,7 @@ class Controller extends REST {
                     $this->response($this->json($utilisateur), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response('', 400);
                     break;
             }
         } else {
@@ -303,6 +309,9 @@ class Controller extends REST {
         if(!empty($nom_groupe)) {
             $groupe = $this->service->_getGroupe($nom_groupe);
             switch (true) {
+                case sizeof($groupe) == 0:
+                    $this->response('', 204);
+                    break;
                 case $groupe == false:
                     $this->response('', 400);
                     break;
@@ -310,7 +319,7 @@ class Controller extends REST {
                     $this->response($this->json($groupe), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response('', 400);
                     break;
             }
         } else {
@@ -326,15 +335,18 @@ class Controller extends REST {
         if(!empty($nom_communaute)) {
             $communaute = $this->service->_getCommunaute($nom_communaute);
             switch (true) {
-            case $communaute == false:
-                $this->response('', 400);
-                break;
-            case sizeof($communaute) > 0:
-                $this->response($this->json($communaute), 200);
-                break;
-            default:
-                $this->response('', 204);
-                break;
+                case sizeof($communaute) == 0:
+                    $this->response('', 204);
+                    break;
+                case $communaute == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($communaute) > 0:
+                    $this->response($this->json($communaute), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
         }
         } else {
             $error = array('status' => "Failed", "msg" => "Invalid json");
@@ -349,6 +361,9 @@ class Controller extends REST {
         if(!empty($nom_groupe)) {
             $utilisateurs = $this->service->_getUtilisateursGroupe($nom_groupe);
             switch (true) {
+                case sizeof($utilisateurs) == 0:
+                    $this->response('', 204);
+                    break;
                 case $utilisateurs == false:
                     $this->response('', 400);
                     break;
@@ -356,7 +371,7 @@ class Controller extends REST {
                     $this->response($this->json($utilisateurs), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response('', 400);
                     break;
             }
         } else {
@@ -372,6 +387,9 @@ class Controller extends REST {
         if(!empty($nom_communaute)) {
             $utilisateurs = $this->service->_getUtilisateursCommunaute($nom_communaute);
             switch (true) {
+                case sizeof($utilisateurs) == 0:
+                    $this->response('', 204);
+                    break;
                 case $utilisateurs == false:
                     $this->response('', 400);
                     break;
@@ -379,7 +397,7 @@ class Controller extends REST {
                     $this->response($this->json($utilisateurs), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response('', 400);
                     break;
             }
         } else {
@@ -393,6 +411,9 @@ class Controller extends REST {
         }
         $matchs = $this->service->_getMatchs();
         switch (true) {
+            case sizeof($matchs) == 0:
+                $this->response('', 204);
+                break;
             case $matchs == false:
                 $this->response('', 400);
                 break;
@@ -400,7 +421,7 @@ class Controller extends REST {
                 $this->response($this->json($matchs), 200);
                 break;
             default:
-                $this->response('', 204);
+                $this->response('', 400);
                 break;
         }
     }
@@ -414,6 +435,9 @@ class Controller extends REST {
         if(!empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
             $match = $this->service->_getMatch($equipe1, $equipe2, $date_match);
             switch (true) {
+                case sizeof($match) == 0:
+                    $this->response('', 204);
+                    break;
                 case $match == false:
                     $this->response('', 400);
                     break;
@@ -421,7 +445,7 @@ class Controller extends REST {
                     $this->response($this->json($match), 200);
                     break;
                 default:
-                    $this->response('', 204);
+                    $this->response('', 400);
                     break;
             }
         } else {
@@ -442,6 +466,9 @@ class Controller extends REST {
         if(!empty($utilisateur) && (!empty($groupe) || !empty($communaute)) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
             $pronostic = $this->service->_getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match);
             switch (true) {
+                case sizeof($pronostic) == 0:
+                    $this->response('', 204);
+                    break;
                 case $pronostic == false:
                     $this->response('', 400);
                     break;
@@ -449,7 +476,7 @@ class Controller extends REST {
                     $this->response($this->json($pronostic), 200);
                     break;
                 default:
-                    $this->response($pronostic, 204);
+                    $this->response($pronostic, 400);
                     break;
             }
         } else {
