@@ -357,11 +357,13 @@ class Service {
             error_log($this->mysqli->error);
             return false;
         }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);
             return false;
         }
-
         return $result;
     }
     public function _getGroupe($groupe) {
@@ -372,6 +374,9 @@ class Service {
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
         }
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);
@@ -387,6 +392,9 @@ class Service {
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
         }
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);
@@ -467,6 +475,9 @@ class Service {
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
         }
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);

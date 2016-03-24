@@ -660,7 +660,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $value = $this->service->_getMatch("EquipeInvalide", $equipe2, $dateMatch);
 
-        $this->assertFalse($value, "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
+        $this->assertTrue(empty($value), "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
     }
     public function test_getMatchDateInvalide() {
         $equipe1 = "France";
@@ -671,7 +671,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $value = $this->service->_getMatch($equipe1, $equipe2, "DateInvalide");
 
-        $this->assertFalse($value, "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
+        $this->assertTrue(empty($value), "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
     }
 
     public function test_getPronosticSuccessGroupe() {
