@@ -348,6 +348,36 @@ class Service {
         }
         return $result;
     }
+    public function _getGroupesUtilisateur($id_facebook) {
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe INNER JOIN Utilisateur_groupe ON Groupe.ID_Grp = Utilisateur_groupe.Groupe
+              WHERE Utilisateur_groupe.Utilisateur = '$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getCommunautesUtilisateur($id_facebook) {
+        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom FROM Communaute INNER JOIN Utilisateur_Communaute ON Communaute.ID_Com = Utilisateur_Communaute.Communaute
+              WHERE Utilisateur_Communaute.Utilisateur = '$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
     public function _getUtilisateur($id_facebook) {
         if(empty($id_facebook)){
             return [];

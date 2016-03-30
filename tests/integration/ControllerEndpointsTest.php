@@ -96,7 +96,9 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      * - On r�cup�re les matchs
      * - On modifie le match
      * - On r�cup�re les matchs
+     * - On récupère les groupes de l'utilisateur
      * - On cr�er un groupe
+     * - On récupère les groupes de l'utilisateur
      * - On r�cup�re les groupes
      * - On modifie le groupe
      * - On r�cup�re les groupes
@@ -184,6 +186,11 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new), "Groupe" => "B"))), (string)$requete->getBody());
 
+        // On récupère les groupes de l'utilisateur
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupesUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . '&id_facebook=' . $id_facebook);
+        $this->assertEquals(204, $requete->getStatusCode());
+        $this->assertEquals('', (string)$requete->getBody());
+
         // On creer un groupe
         $nomGroupe = "NomGroupe";
         $photoGroupe = "PhotoGroupe";
@@ -197,6 +204,11 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->assertEquals(201, $requete->getStatusCode());
+
+        // On récupère les groupes de l'utilisateur
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupesUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . '&id_facebook=' . $id_facebook);
+        $this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(json_encode(array(array("NomGrp" => $nomGroupe, "AdminGrp" => $id_facebook, "PhotoGrp" => $photoGroupe))), (string)$requete->getBody());
 
         // On recupere les groupes
         $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
@@ -358,7 +370,9 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      * - On r�cup�re les matchs
      * - On modifie le match
      * - On r�cup�re les matchs
+     * - On récupère les communautes de l'utilisateur
      * - On cr�er une communaute
+     * - On récupère les communautes de l'utilisateur
      * - On r�cup�re les communautes
      * - On modifie la communaute
      * - On r�cup�re les communautes
@@ -446,6 +460,11 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(json_encode(array(array("Equipe1" => $equipe1_new, "Equipe2" => $equipe2_new, "Score1" => NULL, "Score2" => NULL, "DateMatch" => strtotime($date_match_new), "Groupe" => "B"))), (string)$requete->getBody());
 
+        // On récupère les communautes de l'utilisateur
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautesUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . '&id_facebook=' . $id_facebook);
+        $this->assertEquals(204, $requete->getStatusCode());
+        $this->assertEquals('', (string)$requete->getBody());
+
         // On creer une communaute
         $nomCommunaute = "NomCommunaute";
         $photoCommunaute = "PhotoCommunaute";
@@ -461,6 +480,11 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->assertEquals(201, $requete->getStatusCode());
+
+        // On récupère les communautes de l'utilisateur
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautesUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . '&id_facebook=' . $id_facebook);
+        $this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(json_encode(array(array("NomCom" => $nomCommunaute, "AdminCom" => $id_facebook, "PhotoCom" => $photoCommunaute, "TypeCom" => $typeCom))), (string)$requete->getBody());
 
         // On recupere les communautes
         $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);

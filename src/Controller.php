@@ -255,6 +255,55 @@ class Controller extends REST {
                 break;
         }
     }
+
+
+    private function getGroupesUtilisateur() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $id_facebook = $this->_request['id_facebook'];
+        $groupe = $this->service->_getGroupesUtilisateur($id_facebook);
+        switch (true) {
+            case sizeof($groupe) > 0:
+                $this->response($this->json($groupe), 200);
+                break;
+            case is_array($groupe):
+                $this->response('', 204);
+                break;
+            case $groupe == false:
+                $this->response('', 400);
+                break;
+            default:
+                $this->response('', 400);
+                break;
+        }
+    }
+
+    private function getCommunautesUtilisateur() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $id_facebook = $this->_request['id_facebook'];
+        $communaute = $this->service->_getCommunautesUtilisateur($id_facebook);
+        switch (true) {
+            case sizeof($communaute) > 0:
+                $this->response($this->json($communaute), 200);
+                break;
+            case is_array($communaute):
+                $this->response('', 204);
+                break;
+            case $communaute == false:
+                $this->response('', 400);
+                break;
+            default:
+                $this->response('', 400);
+                break;
+        }
+    }
+
+
+
+
     private function getCommunautes() {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);

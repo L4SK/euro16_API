@@ -463,6 +463,66 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedSize, sizeOf($value), "Le resultat devrait contenir 3 communautes");
     }
 
+    public function test_getGroupesUtilisateurSuccess() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerGroupe("NomGroupe1", $id_facebook, "Photo1");
+        $this->service->_creerGroupe("NomGroupe2", $id_facebook, "Photo2");
+
+        $expectedValue = array(
+            array("NomGrp" => "NomGroupe1",
+                "AdminGrp" => $id_facebook,
+                "PhotoGrp" => "Photo1"
+            ),
+            array("NomGrp" => "NomGroupe2",
+                "AdminGrp" => $id_facebook,
+                "PhotoGrp" => "Photo2"
+            )
+        );
+        $value = $this->service->_getGroupesUtilisateur($id_facebook);
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les groupes de l'utilisateur");
+    }
+    public function test_getGroupesUtilisateurInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerGroupe("NomGroupe1", $id_facebook, "Photo1");
+        $this->service->_creerGroupe("NomGroupe2", $id_facebook, "Photo2");
+
+        $value = $this->service->_getGroupesUtilisateur("ID_Inexistant");
+        $this->assertTrue(empty($value), "Le resultat devrait retourner un tableau vide");
+    }
+
+    public function test_getCommunautesUtilisateurSuccess() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerCommunaute("NomCommunaute1", $id_facebook, "PhotoCommunaute1", "default");
+        $this->service->_creerCommunaute("NomCommunaute2", $id_facebook, "PhotoCommunaute2", "default");
+
+        $expectedValue = array(
+            array("NomCom" => "NomCommunaute1",
+                "AdminCom" => $id_facebook,
+                "PhotoCom" => "PhotoCommunaute1",
+                "TypeCom"  => "default"
+            ),
+            array("NomCom" => "NomCommunaute2",
+                "AdminCom" => $id_facebook,
+                "PhotoCom" => "PhotoCommunaute2",
+                "TypeCom"  => "default"
+            )
+        );
+        $value = $this->service->_getCommunautesUtilisateur($id_facebook);
+        $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les communautes de l'utilisateur");
+    }
+    public function test_getCommunautesUtilisateurInexistant() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerCommunaute("NomCommunaute1", $id_facebook, "PhotoCommunaute1", "default");
+        $this->service->_creerCommunaute("NomCommunaute2", $id_facebook, "PhotoCommunaute2", "default");
+
+        $value = $this->service->_getCommunautesUtilisateur("ID_Inexistant");
+        $this->assertTrue(empty($value), "Le resultat devrait retourner un tableau vide");
+    }
+
     public function test_getUtilisateurSuccess() {
         $id_facebook = "FB123456u1";
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
