@@ -349,8 +349,8 @@ class Service {
         return $result;
     }
     public function _getGroupesUtilisateur($id_facebook) {
-        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe INNER JOIN Utilisateur_groupe ON Groupe.ID_Grp = Utilisateur_groupe.Groupe
-              WHERE Utilisateur_groupe.Utilisateur = '$id_facebook'";
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe INNER JOIN Utilisateur_Groupe ON Groupe.ID_Grp = Utilisateur_Groupe.Groupe
+              WHERE Utilisateur_Groupe.Utilisateur = '$id_facebook'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
