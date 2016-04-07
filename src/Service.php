@@ -50,9 +50,12 @@ class Service {
         return $this->mysqli->more_results();
     }
 
-    public function _creerUtilisateur($nom, $prenom, $photo, $id_facebook) {
+    public function _creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook) {
         if (empty($nom) || empty($prenom) || empty($id_facebook)) {
             return false;
+        }
+        if (empty($email)){
+            $email = "NO EMAIL";
         }
         $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
         if (!($sql = $this->mysqli->query($req))) {
@@ -63,7 +66,7 @@ class Service {
             error_log("Impossible de creer l'utilisateur : id deja present en base");
             return false;
         }
-        $req = "INSERT INTO Utilisateur(NomUti, PrenomUti, PhotoUti, ID_Facebook) VALUES ('$nom', '$prenom', '$photo', '$id_facebook')";
+        $req = "INSERT INTO Utilisateur(NomUti, PrenomUti, PhotoUti, Email, ID_Facebook) VALUES ('$nom', '$prenom', '$photo', '$email', '$id_facebook')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;

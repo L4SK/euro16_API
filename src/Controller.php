@@ -59,9 +59,10 @@ class Controller extends REST {
         $nom = $this->_request['nom'];
         $prenom = $this->_request['prenom'];
         $photo = $this->_request['photo'];
+        $email = $this->_request['email'];
         $id_facebook = $this->_request['id_facebook'];
         if (!empty($nom) && !empty($prenom) && !empty($photo) && !empty($id_facebook)) {
-            switch ($this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook)) {
+            switch ($this->service->_creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook)) {
                 case true:
                     $this->response('', 201);
                     break;
