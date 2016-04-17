@@ -69,7 +69,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $photo = "PhotoModif";
         $email = "toto2@toto2.fr";
         $requete = $this->client->put($GLOBALS['api_url'] . 'updateUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 'nom' => $nom,
                 'prenom' => $prenom,
                 'photo' => $photo,
@@ -176,7 +176,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $equipe2_new = "Angleterre";
         $date_match_new = "05-07-2016 20:00:00";
         $requete = $this->client->put($GLOBALS['api_url'] . 'updateMatch&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "equipe1_old" => $equipe1,
                 "equipe1_new" => $equipe1_new,
                 "equipe2_old" => $equipe2,
@@ -229,7 +229,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $nomGroupeModif = "NomGroupeModif";
         $photoGroupe = "PhotoGroupeModif";
         $requete = $this->client->put($GLOBALS['api_url'] . 'updateGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "old_nom" => $nomGroupe,
                 "new_nom" => $nomGroupeModif,
                 "admin" => $id_facebook,
@@ -310,7 +310,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
         // On modifie les pronostics d'un utilisateur dans un groupe
         $requete = $this->client->put($GLOBALS['api_url'] . 'updatePronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "id_facebook" => $idFacebookUser,
                 "equipe1" => $equipe1_new,
                 "equipe2" => $equipe2_new,
@@ -452,7 +452,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $equipe2_new = "Angleterre";
         $date_match_new = "05-07-2016 20:00:00";
         $requete = $this->client->put($GLOBALS['api_url'] . 'updateMatch&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "equipe1_old" => $equipe1,
                 "equipe1_new" => $equipe1_new,
                 "equipe2_old" => $equipe2,
@@ -507,7 +507,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $nomCommunauteModif = "NomCommunauteModif";
         $photoCommunaute = "PhotoCommunauteModif";
         $requete = $this->client->put($GLOBALS['api_url'] . 'updateCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "old_nom" => $nomCommunaute,
                 "new_nom" => $nomCommunauteModif,
                 "admin" => $id_facebook,
@@ -589,7 +589,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
         // On modifie les pronostics d'un utilisateur dans une communaute
         $requete = $this->client->put($GLOBALS['api_url'] . 'updatePronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
-            [ 'form_params' => [
+            [ 'json' => [
                 "id_facebook" => $idFacebookUser,
                 "equipe1" => $equipe1_new,
                 "equipe2" => $equipe2_new,
