@@ -161,31 +161,13 @@ class Service {
         }
         return true;
     }
-    public function _creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, $communaute) {
+    public function _creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat) {
         if (empty($id_facebook) || empty($equipe1) || empty($equipe2) || empty($date_match) || empty($resultat)) {
             return false;
         }
         if (!in_array($resultat, ['1', 'n', 'N', '2'])) {
             error_log("Resultat incorrect");
             return false;
-        }
-
-        if (!empty($groupe)) {
-            $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp='$groupe'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (!empty($communaute)) {
-            $req = "SELECT ID_Cla FROM Communaute WHERE NomCom='$communaute'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (empty($groupe) && empty($communaute)) {
-            $ID_Cla = "ID_GLOBAL";
         }
         $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
@@ -209,9 +191,9 @@ class Service {
         }
 
         if(empty($score1) || empty($score2)){
-            $req = "INSERT INTO Pronostic(Utilisateur, ID_Mch, Resultat, ID_Cla) VALUES ('$id_facebook', '$ID_Mch', '$resultat', '$ID_Cla')";
+            $req = "INSERT INTO Pronostic(Utilisateur, ID_Mch, Resultat) VALUES ('$id_facebook', '$ID_Mch', '$resultat')";
         } else {
-            $req = "INSERT INTO Pronostic(Utilisateur, Score1, Score2, ID_Mch, Resultat, ID_Cla) VALUES ('$id_facebook', '$score1', '$score2', '$ID_Mch', '$resultat', '$ID_Cla')";
+            $req = "INSERT INTO Pronostic(Utilisateur, Score1, Score2, ID_Mch, Resultat) VALUES ('$id_facebook', '$score1', '$score2', '$ID_Mch', '$resultat')";
         }
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
@@ -352,7 +334,7 @@ class Service {
         return $result;
     }
     public function _getGroupesUtilisateur($id_facebook) {
-        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe INNER JOIN Utilisateur_Groupe ON Groupe.ID_Grp = Utilisateur_Groupe.Groupe
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp, Statut FROM Groupe INNER JOIN Utilisateur_Groupe ON Groupe.ID_Grp = Utilisateur_Groupe.Groupe
               WHERE Utilisateur_Groupe.Utilisateur = '$id_facebook'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -367,7 +349,7 @@ class Service {
         return $result;
     }
     public function _getCommunautesUtilisateur($id_facebook) {
-        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom FROM Communaute INNER JOIN Utilisateur_Communaute ON Communaute.ID_Com = Utilisateur_Communaute.Communaute
+        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom, Statut FROM Communaute INNER JOIN Utilisateur_Communaute ON Communaute.ID_Com = Utilisateur_Communaute.Communaute
               WHERE Utilisateur_Communaute.Utilisateur = '$id_facebook'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -519,26 +501,9 @@ class Service {
         $result["DateMatch"] = strtotime($result["DateMatch"]);
         return $result;
     }
-    public function _getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match) {
+    public function _getPronostic($utilisateur, $equipe1, $equipe2, $date_match) {
         if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
             return false;
-        }
-        if (!empty($groupe)) {
-            $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp='$groupe'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (!empty($communaute)) {
-            $req = "SELECT ID_Cla FROM Communaute WHERE NomCom='$communaute'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (empty($groupe) && empty($communaute)) {
-            $ID_Cla = "ID_GLOBAL";
         }
         $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
@@ -549,7 +514,7 @@ class Service {
             return false;
         }
         $ID_Mch = $sql->fetch_object()->ID_Mch;
-        $req = "SELECT Utilisateur, Score1, Score2, Resultat FROM Pronostic WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+        $req = "SELECT Utilisateur, Score1, Score2, Resultat FROM Pronostic WHERE Utilisateur='$utilisateur' AND ID_Mch='$ID_Mch'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -564,7 +529,7 @@ class Service {
         return $result;
     }
 
-    public function _updateUtilisateur($nom, $prenom, $photo, $id_facebook) {
+    public function _updateUtilisateur($nom, $prenom, $photo, $email, $id_facebook) {
         if(empty($id_facebook)){
             return false;
         }
@@ -577,13 +542,77 @@ class Service {
             return false;
         }
 
-        $req = "UPDATE Utilisateur SET NomUti='$nom', PrenomUti='$prenom', PhotoUti='$photo' WHERE ID_Facebook='$id_facebook'";
+        $req = "UPDATE Utilisateur SET NomUti='$nom', PrenomUti='$prenom', PhotoUti='$photo', Email='$email' WHERE ID_Facebook='$id_facebook'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
         }
         return true;
 
+    }
+    public function _updateStatutUtilisateurGroupe($groupe, $utilisateur, $new_statut) {
+        if(empty($groupe) || empty($utilisateur) || empty($new_statut)){
+            return false;
+        }
+        $req = "SELECT * FROM Groupe WHERE NomGrp='$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows != 1) {
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $id = $result['ID_Grp'];
+        $req = "SELECT 1 FROM Utilisateur_Groupe WHERE Groupe='$id' AND Utilisateur='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows != 0) {
+            return false;
+        }
+        $req = "UPDATE Utilisateur_Groupe SET Statut='$new_statut' WHERE Groupe='$id' AND Utilisateur='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return true;
+    }
+    public function _updateStatutUtilisateurCommunaute($communaute, $utilisateur, $new_statut) {
+        if(empty($communaute) || empty($utilisateur) || empty($new_statut)){
+            return false;
+        }
+        $req = "SELECT ID_Com FROM Communaute WHERE NomCom='$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $idCom = $result['ID_Com'];
+        $req = "SELECT 1 FROM Utilisateur_Communaute WHERE Communaute='$idCom' AND Utilisateur='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows != 0) {
+            return false;
+        }
+        $req = "UPDATE Utilisateur_Communaute SET Statut='$new_statut' WHERE Communaute='$idCom' AND Utilisateur='$utilisateur'  ";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return true;
     }
     public function _updateGroupe($old_nom, $new_nom, $admin, $photo) {
         if(empty($old_nom)){
@@ -654,8 +683,11 @@ class Service {
         if ($sql->num_rows == 0) {
             return false;
         }
-
-        $idCom = $rlt = $sql->fetch_assoc()["ID_Com"];
+        if (!($result = $sql->fetch_assoc())){
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $idCom = $result['ID_Com'];
         if(!empty($new_nom)) {
             $req = "SELECT 1 FROM Communaute WHERE NomCom='$new_nom'";
             if (!($sql = $this->mysqli->query($req))) {
@@ -739,7 +771,7 @@ class Service {
         }
         return true;
     }
-    public function _updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2) {
+    public function _updatePronostic($utilisateur, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2) {
         if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
             return false;
         }
@@ -751,23 +783,6 @@ class Service {
         if ($sql->num_rows == 0) {
             return false;
         }
-        if (!empty($groupe)) {
-            $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp='$groupe'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (!empty($communaute)) {
-            $req = "SELECT ID_Cla FROM Communaute WHERE NomCom='$communaute'";
-            if (!($sql = $this->mysqli->query($req))) {
-                error_log($this->mysqli->error);
-                return false;
-            }
-            $ID_Cla = $sql->fetch_object()->ID_Cla;
-        } else if (empty($groupe) && empty($communaute)) {
-            $ID_Cla = "ID_GLOBAL";
-        }
         $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -778,9 +793,9 @@ class Service {
         }
         $ID_Mch = $sql->fetch_object()->ID_Mch;
         if(empty($score1) || empty($score2)) {
-            $req = "UPDATE Pronostic SET Resultat='$resultat' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+            $req = "UPDATE Pronostic SET Resultat='$resultat' WHERE Utilisateur='$utilisateur' AND ID_Mch='$ID_Mch'";
         } else {
-            $req = "UPDATE Pronostic SET Resultat='$resultat', Score1='$score1', Score2='$score2' WHERE Utilisateur='$utilisateur' AND ID_Cla='$ID_Cla' AND ID_Mch='$ID_Mch'";
+            $req = "UPDATE Pronostic SET Resultat='$resultat', Score1='$score1', Score2='$score2' WHERE Utilisateur='$utilisateur' AND ID_Mch='$ID_Mch'";
         }
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -841,11 +856,6 @@ class Service {
             return -1;
         }
         $ID_Grp = $sql->fetch_object()->ID_Grp;
-        $req = "DELETE FROM Pronostic WHERE Utilisateur = '$id_facebook' AND ID_Cla = (SELECT ID_Cla FROM Groupe WHERE ID_Grp = '$ID_Grp')";
-        if (!$this->mysqli->query($req)) {
-            error_log($this->mysqli->error);
-            return -1;
-        }
         $req = "DELETE FROM Utilisateur_Groupe WHERE Utilisateur = '$id_facebook' AND Groupe = '$ID_Grp'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
@@ -872,11 +882,6 @@ class Service {
             return -1;
         }
         $ID_Com = $sql->fetch_object()->ID_Com;
-        $req = "DELETE FROM Pronostic WHERE Utilisateur = '$id_facebook' AND ID_Cla = (SELECT ID_Cla FROM Communaute WHERE ID_Com = '$ID_Com')";
-        if (!$this->mysqli->query($req)) {
-            error_log($this->mysqli->error);
-            return -1;
-        }
         $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$ID_Com'";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);

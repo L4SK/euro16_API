@@ -25,10 +25,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $nom = "NomTest";
         $prenom = "PrenomTest";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $email = "toto@gmail.com";
         $id_facebook = "FB123456789EXEMPLE";
 
         $expectedValue = true;
-        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook);
+        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook);
         $this->assertEquals($expectedValue, $value, "La creation d'utilisateur aurait du reussir");
     }
     // Test trop precis, ne pas reproduire
@@ -36,10 +37,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $nom = "NomTest";
         $prenom = "PrenomTest";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $email = "toto@gmail.com";
         $id_facebook = "";
 
         $expectedValue = false;
-        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook);
+        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook);
 
         $this->assertEquals($expectedValue, $value, "La creation aurait du echouer pour id_facebook vide");
     }
@@ -47,20 +49,21 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $nom = "NomTest";
         $prenom = "PrenomTest";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
+        $email = "toto@gmail.com";
         $id_facebook = "FB123456789EXEMPLE";
 
         $expectedValue = false;
 
         // Premiere insertion
-        $this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook);
+        $this->service->_creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook);
         // Deuxieme insertion
-        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $id_facebook);
+        $value = $this->service->_creerUtilisateur($nom, $prenom, $photo, $email, $id_facebook);
 
         $this->assertEquals($expectedValue, $value, "La creation d'utilisateur aurait du echouer pour doublon");
     }
 
     public function test_creerGroupeSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $nom = "GroupeTest";
         $admin = "FB123456u1";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
@@ -79,7 +82,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
     }
     public function test_creerGroupeNomGroupeExistant() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $nom = "GroupeTest";
         $admin = "FB123456u1";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
@@ -91,7 +94,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_creerCommunauteSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $nom = "CommunauteTest";
         $admin = "FB123456u1";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
@@ -112,7 +115,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "La creation de groupe aurait du echoue pour admin inexistant");
     }
     public function test_creerCommunauteNomCommunauteExistant() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1","toto@toto.fr", "FB123456u1");
         $nom = "CommunauteTest";
         $admin = "FB123456u1";
         $photo = "http://www.adresse-longue.fr/lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo_lien_vers_la_photo";
@@ -150,8 +153,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "La creation de match aurait du echouer pour doublon");
     }
 
-    public function test_creerPronosticSuccessGroupe() {
-        $groupe = "NomGroupe";
+    public function test_creerPronosticSuccess() {
         $id_facebook = "FB123456uAdmin";
         $equipe1 = "France";
         $equipe2 = "Portugal";
@@ -160,46 +162,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = true;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
-        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
-    }
-    public function test_creerPronosticSuccessCommunaute() {
-        $communaute = "NomCommunaute";
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-
-        $expectedValue = true;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
-        $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
-    }
-    public function test_creerPronosticSuccessGlobal() {
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-
-        $expectedValue = true;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
         $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du reussir");
     }
     public function test_creerPronosticFailureUtilisateurInexistant() {
@@ -214,7 +181,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = false;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
         $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour utilisateur inexistant");
     }
     public function test_creerPronosticFailureMatchInexistant() {
@@ -225,10 +192,10 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score2 = "";
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
 
         $expectedValue = false;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
         $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour match inexistant");
     }
     public function test_creerPronosticFailureResultatIncorrect() {
@@ -240,21 +207,21 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "B";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
 
         $expectedValue = false;
-        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $value = $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
         $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour resultat incorrect");
     }
 
     public function test_ajouterUtilisateurGroupeSuccess() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
 
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = true;
         $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, $groupe, 1);
@@ -262,11 +229,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurGroupeFailureDuplique() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
 
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = false;
 
@@ -278,7 +245,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurGroupeFailureUtilisateurInexistant() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
 
         $expectedValue = false;
@@ -287,7 +254,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurGroupeFailureGroupeInexistant() {
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = false;
         $value = $this->service->_ajouterUtilisateurGroupe($id_facebook, "NOM_INEXISTANT", 1);
@@ -296,11 +263,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_ajouterUtilisateurCommunauteSuccess() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
 
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = true;
         $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, $communaute, 1);
@@ -308,11 +275,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurCommunauteFailureDuplique() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
 
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = false;
 
@@ -324,7 +291,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurCommunauteFailureUtilisateurInexistant() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "Photo1", "default");
 
         $expectedValue = false;
@@ -333,7 +300,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_ajouterUtilisateurCommunauteFailureCommunauteInexistante() {
         $id_facebook = "FB123456789EXEMPLE";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
 
         $expectedValue = false;
         $value = $this->service->_ajouterUtilisateurCommunaute($id_facebook, "NOM_INEXISTANT", 1);
@@ -344,23 +311,26 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(empty($this->service->_getUtilisateurs()), "La liste d'utilisateurs devrait etre vide");
     }
     public function test_getUtilisateursSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
-        $this->service->_creerUtilisateur("Nom3", "Prenom3", "Photo3", "FB123456u3");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto@toto.fr", "FB123456u2");
+        $this->service->_creerUtilisateur("Nom3", "Prenom3", "Photo3", "toto@toto.fr", "FB123456u3");
         $expectedValue1 =
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u1");
         $expectedValue2 =
             array("NomUti" => "Nom2",
                 "PrenomUti" => "Prenom2",
                 "PhotoUti" => "Photo2",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u2");
         $expectedValue3 =
             array("NomUti" => "Nom3",
                 "PrenomUti" => "Prenom3",
                 "PhotoUti" => "Photo3",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u3");
 
         $expectedSize = 3;
@@ -398,7 +368,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(empty($this->service->_getGroupes()), "La liste de groupes devrait etre vide");
     }
     public function test_getGroupesSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerGroupe("Groupe1", "FB123456u1", "PhotoGroupe1");
         $this->service->_creerGroupe("Groupe2", "FB123456u1", "PhotoGroupe2");
         $this->service->_creerGroupe("Groupe3", "FB123456u1", "PhotoGroupe3");
@@ -431,7 +401,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(empty($this->service->_getCommunautes()), "La liste de communautes devrait etre vide");
     }
     public function test_getCommunautesSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerCommunaute("Communaute1", "FB123456u1", "PhotoCommunaute1", "default");
         $this->service->_creerCommunaute("Communaute2", "FB123456u1", "PhotoCommunaute2", "default");
         $this->service->_creerCommunaute("Communaute3", "FB123456u1", "PhotoCommunaute3", "default");
@@ -465,18 +435,20 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getGroupesUtilisateurSuccess() {
         $id_facebook = "FB123456uAdmin";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerGroupe("NomGroupe1", $id_facebook, "Photo1");
         $this->service->_creerGroupe("NomGroupe2", $id_facebook, "Photo2");
 
         $expectedValue = array(
             array("NomGrp" => "NomGroupe1",
                 "AdminGrp" => $id_facebook,
-                "PhotoGrp" => "Photo1"
+                "PhotoGrp" => "Photo1",
+                "Statut" => 1
             ),
             array("NomGrp" => "NomGroupe2",
                 "AdminGrp" => $id_facebook,
-                "PhotoGrp" => "Photo2"
+                "PhotoGrp" => "Photo2",
+                "Statut" => 1
             )
         );
         $value = $this->service->_getGroupesUtilisateur($id_facebook);
@@ -484,7 +456,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_getGroupesUtilisateurInexistant() {
         $id_facebook = "FB123456uAdmin";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerGroupe("NomGroupe1", $id_facebook, "Photo1");
         $this->service->_creerGroupe("NomGroupe2", $id_facebook, "Photo2");
 
@@ -494,20 +466,22 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getCommunautesUtilisateurSuccess() {
         $id_facebook = "FB123456uAdmin";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerCommunaute("NomCommunaute1", $id_facebook, "PhotoCommunaute1", "default");
-        $this->service->_creerCommunaute("NomCommunaute2", $id_facebook, "PhotoCommunaute2", "default");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
+        $this->service->_creerCommunaute("NomCommunaute1", $id_facebook, "PhotoCommunaute1", "priv");
+        $this->service->_creerCommunaute("NomCommunaute2", $id_facebook, "PhotoCommunaute2", "pub");
 
         $expectedValue = array(
             array("NomCom" => "NomCommunaute1",
                 "AdminCom" => $id_facebook,
                 "PhotoCom" => "PhotoCommunaute1",
-                "TypeCom"  => "default"
+                "TypeCom"  => "priv",
+                "Statut" => 1
             ),
             array("NomCom" => "NomCommunaute2",
                 "AdminCom" => $id_facebook,
                 "PhotoCom" => "PhotoCommunaute2",
-                "TypeCom"  => "default"
+                "TypeCom"  => "pub",
+                "Statut" => 1
             )
         );
         $value = $this->service->_getCommunautesUtilisateur($id_facebook);
@@ -515,7 +489,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_getCommunautesUtilisateurInexistant() {
         $id_facebook = "FB123456uAdmin";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerCommunaute("NomCommunaute1", $id_facebook, "PhotoCommunaute1", "default");
         $this->service->_creerCommunaute("NomCommunaute2", $id_facebook, "PhotoCommunaute2", "default");
 
@@ -525,11 +499,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getUtilisateurSuccess() {
         $id_facebook = "FB123456u1";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", $id_facebook);
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", $id_facebook);
         $expectedValue =
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u1");
 
         $value = $this->service->_getUtilisateur($id_facebook);
@@ -542,7 +517,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getGroupeSuccess() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerGroupe($groupe, "FB123456u1", "PhotoGroupe1");
         $expectedValue =
             array("NomGrp" => "NomGroupe",
@@ -560,7 +535,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getCommunauteSuccess() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerCommunaute($communaute, "FB123456u1", "PhotoCommunaute1", "default");
         $expectedValue =
             array("NomCom" => "NomCommunaute",
@@ -579,9 +554,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getUtilisateursGroupeSuccess() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto@toto.fr", "FB123456u2");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "Photo1");
         $this->service->_ajouterUtilisateurGroupe("FB123456u1", $groupe, 1);
         $this->service->_ajouterUtilisateurGroupe("FB123456u2", $groupe, 1);
@@ -590,18 +565,21 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u1",
                 "Statut" => 1
             ),
             array("NomUti" => "Nom2",
                 "PrenomUti" => "Prenom2",
                 "PhotoUti" => "Photo2",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u2",
                 "Statut" => 1
             ),
             array("NomUti" => "NomAdmin",
                 "PrenomUti" => "PrenomAdmin",
                 "PhotoUti" => "PhotoAdmin",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456uAdmin",
                 "Statut" => 1
             )
@@ -610,7 +588,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les utilisateurs du groupe");
     }
     public function test_getUtilisateursGroupeInexistante() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "Photo1");
 
         $expectedValue = false;
@@ -620,9 +598,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_getUtilisateursCommunauteSuccess() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto@toto.fr", "FB123456u2");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoCommunaute1", "default");
         $this->service->_ajouterUtilisateurCommunaute("FB123456u1", $communaute, 1);
         $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $communaute, 1);
@@ -631,18 +609,21 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
             array("NomUti" => "Nom1",
                 "PrenomUti" => "Prenom1",
                 "PhotoUti" => "Photo1",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u1",
                 "Statut" => 1
             ),
             array("NomUti" => "Nom2",
                 "PrenomUti" => "Prenom2",
                 "PhotoUti" => "Photo2",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456u2",
                 "Statut" => 1
             ),
             array("NomUti" => "NomAdmin",
                 "PrenomUti" => "PrenomAdmin",
                 "PhotoUti" => "PhotoAdmin",
+                "Email" => "toto@toto.fr",
                 "ID_Facebook" => "FB123456uAdmin",
                 "Statut" => 1
             )
@@ -651,7 +632,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "Le resultat devrait retourner les utilisateurs de la communaute");
     }
     public function test_getUtilisateursCommunauteInexistante() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
         $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute1", "default");
 
         $expectedValue = false;
@@ -733,9 +714,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue(empty($value), "Le resultat ne devrait pas contenir le match qui vient d'etre cree");
     }
-
-    public function test_getPronosticSuccessGroupe() {
-        $groupe = "NomGroupe";
+    public function test_getPronosticSuccess() {
         $id_facebook = "FB123456uAdmin";
         $equipe1 = "France";
         $equipe2 = "Portugal";
@@ -744,56 +723,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
-
-        $expectedValue = array(
-            "Utilisateur" => $id_facebook,
-            "Score1" => 0,
-            "Score2" => 0,
-            "Resultat" => 1
-        );
-        $value = $this->service->_getPronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match);
-        $this->assertEquals($expectedValue, $value, "La recuperation du pronostic aurait du reussir");
-    }
-    public function test_getPronosticSuccessCommunaute() {
-        $communaute = "NomCommunaute";
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
-
-        $expectedValue = array(
-            "Utilisateur" => $id_facebook,
-            "Score1" => 0,
-            "Score2" => 0,
-            "Resultat" => 1
-        );
-        $value = $this->service->_getPronostic($id_facebook,"", $communaute, $equipe1, $equipe2, $date_match);
-        $this->assertEquals($expectedValue, $value, "La recuperation du pronostic aurait du reussir");
-    }
-    public function test_getPronosticSuccessGlobal() {
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
 
         $expectedValue = array(
             "Utilisateur" => $id_facebook,
@@ -813,7 +745,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
@@ -829,7 +761,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
@@ -838,39 +770,39 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_updateUtilisateurSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
 
-        $this->assertTrue($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u1"), "L'update d'utilisateur aurait du reussir");
+        $this->assertTrue($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", "FB123456u1"), "L'update d'utilisateur aurait du reussir");
     }
     public function test_updateUtilisateurIdVide() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
 
-        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", ""), "L'update d'utilisateur n'aurait pas du reussir");
+        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", ""), "L'update d'utilisateur n'aurait pas du reussir");
     }
     public function test_updateUtilisateurIdInexistant() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
 
-        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2"), "L'update d'utilisateur n'aurait pas du reussir");
+        $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", "FB123456u2"), "L'update d'utilisateur n'aurait pas du reussir");
     }
 
     public function test_updateGroupeSuccess() {
         $groupe = "NomGroupe";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerGroupe($groupe, "FB123456uAdmin", "PhotoGroupe");
 
         $this->assertTrue($this->service->_updateGroupe($groupe, "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du reussir");
     }
     public function test_updateGroupeNomVide() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
 
         $this->assertFalse($this->service->_updateGroupe("", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du echoue à cause du nom vide");
     }
     public function test_updateGroupeNomInexistant() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerGroupe("NomGroupe", "FB123456uAdmin", "PhotoGroupe");
 
         $this->assertFalse($this->service->_updateGroupe("NomGroupeInexistant", "NomGroupe2", "FB123456uAdmin2", "PhotoGroupe2"), "L'update du groupe aurait du echoue a cause du non inexistant");
@@ -878,22 +810,22 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_updateCommunauteSuccess() {
         $communaute = "NomCommunaute";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoCommunaute", "default");
 
         $this->assertTrue($this->service->_updateCommunaute($communaute, "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du reussir");
     }
     public function test_updateCommunauteNomVide() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute", "default");
 
         $this->assertFalse($this->service->_updateCommunaute("", "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du echoue a cause du nom vide");
     }
     public function test_updateCommunauteNomInexistant() {
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "FB123456uAdmin");
-        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "FB123456uAdmin2");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomAdmin2", "PrenomAdmin2", "PhotoAdmin2", "toto@toto.fr", "FB123456uAdmin2");
         $this->service->_creerCommunaute("NomCommunaute", "FB123456uAdmin", "PhotoCommunaute", "default");
 
         $this->assertFalse($this->service->_updateCommunaute("NomCommunauteInexistant", "NomCommunaute2", "FB123456uAdmin2", "default", "PhotoCommunaute2"), "L'update de la communaute aurait du echoue a cause du nom vide");
@@ -965,9 +897,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($value, "L'update du match n'aurait pas du reussir");
     }
-
-    public function test_updatePronosticSuccessGroupe() {
-        $groupe = "NomGroupe";
+    public function test_updatePronosticSuccess() {
         $id_facebook = "FB123456uAdmin";
         $equipe1 = "France";
         $equipe2 = "Portugal";
@@ -976,46 +906,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerGroupe($groupe, $id_facebook, "Photo1");
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, '');
+        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat);
 
-        $value = $this->service->_updatePronostic($id_facebook, $groupe, "", $equipe1, $equipe2, $date_match, 2, '', '');
-        $this->assertTrue($value, "La modification du pronostic aurait du reussir");
-    }
-    public function test_updatePronosticSuccessCommunaute() {
-        $communaute = "NomCommunaute";
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerCommunaute($communaute, $id_facebook, "Photo1", "default");
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', $communaute);
-
-        $value = $this->service->_updatePronostic($id_facebook, "", $communaute, $equipe1, $equipe2, $date_match, 2, '', '');
-        $this->assertTrue($value, "La modification du pronostic aurait du reussir");
-    }
-    public function test_updatePronosticSuccessGlobal() {
-        $id_facebook = "FB123456uAdmin";
-        $equipe1 = "France";
-        $equipe2 = "Portugal";
-        $score1 = "";
-        $score2 = "";
-        $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
-        $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
-        $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
-        $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
-
-        $value = $this->service->_updatePronostic($id_facebook, "", "", $equipe1, $equipe2, $date_match, 2, '', '');
+        $value = $this->service->_updatePronostic($id_facebook, $equipe1, $equipe2, $date_match, 2, "", "");
         $this->assertTrue($value, "La modification du pronostic aurait du reussir");
     }
     public function test_updatePronosticUtilisateurInexistant() {
@@ -1027,7 +922,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
@@ -1043,7 +938,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $resultat = "1";
         $date_match = "01-07-2015 10:00:00";
         $groupe = "A";
-        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", $id_facebook);
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
         $this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, '', '');
 
@@ -1052,7 +947,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_deleteUtilisateurSuccess() {
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->assertEquals(1, $this->service->_deleteUtilisateur("FB123456u1"), "La suppression d'utilisateur aurait du reussir");
     }
     public function test_deleteUtilisateurInexistant() {
@@ -1065,7 +960,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_deleteGroupeSuccess() {
         $nom = "NomGroupe";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
 
         $expectedValue = 1;
@@ -1075,7 +970,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_deleteGroupeInexistant() {
         $nom = "NomGroupe";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
 
         $expectedValue = 0;
@@ -1086,7 +981,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_deleteCommunauteSuccess() {
         $nom = "NomCommunaute";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
 
         $expectedValue = 1;
@@ -1096,7 +991,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_deleteCommunauteInexistante() {
         $nom = "NomCommunaute";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
 
         $expectedValue = 0;
@@ -1107,8 +1002,8 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_deleteUtilisateurGroupeSuccess() {
         $nom = "NomGroupe";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto@toto.fr", "FB123456u2");
         $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
         $this->service->_ajouterUtilisateurGroupe("FB123456u2", $nom, 1);
 
@@ -1118,7 +1013,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_deleteUtilisateurGroupeFailureSuppressionAdmin() {
         $nom = "NomGroupe";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerGroupe($nom, "FB123456u1", "PhotoGroupe");
 
         $expectedValue = -1;
@@ -1128,9 +1023,9 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
     public function test_deleteUtilisateurCommunauteSuccess() {
         $nom = "NomCommunaute";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
-        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "FB123456u2");
-        $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto@toto.fr", "FB123456u2");
+        $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "pub");
         $this->service->_ajouterUtilisateurCommunaute("FB123456u2", $nom, 1);
 
         $expectedValue = 1;
@@ -1139,7 +1034,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_deleteUtilisateurCommunauteFailureSuppressionAdmin() {
         $nom = "NomCommunaute";
-        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
         $this->service->_creerCommunaute($nom, "FB123456u1", "PhotoCommunaute", "default");
 
         $expectedValue = -1;

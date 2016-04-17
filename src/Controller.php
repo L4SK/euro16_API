@@ -157,10 +157,8 @@ class Controller extends REST {
         $score1 = $this->_request['score1'];
         $score2 = $this->_request['score2'];
         $resultat = $this->_request['resultat'];
-        $groupe = $this->_request['groupe'];
-        $communaute = $this->_request['communaute'];
-        if (!empty($id_facebook) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat) && (!empty($groupe) || !empty($communaute))) {
-            switch ($this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat, $groupe, $communaute)) {
+        if (!empty($id_facebook) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat)) {
+            switch ($this->service->_creerPronostic($id_facebook, $equipe1, $equipe2, $date_match, $score1, $score2, $resultat)) {
                 case true:
                     $this->response('', 201);
                     break;
@@ -508,13 +506,11 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $utilisateur = $this->_request['utilisateur'];
-        $groupe = $this->_request['groupe'];
-        $communaute = $this->_request['communaute'];
         $equipe1 = $this->_request['equipe1'];
         $equipe2 = $this->_request['equipe2'];
         $date_match = $this->_request['date_match'];
-        if(!empty($utilisateur) && (!empty($groupe) || !empty($communaute)) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
-            $pronostic = $this->service->_getPronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match);
+        if(!empty($utilisateur) && !empty($equipe1) && !empty($equipe2) && !empty($date_match)) {
+            $pronostic = $this->service->_getPronostic($utilisateur, $equipe1, $equipe2, $date_match);
             switch (true) {
                 case sizeof($pronostic) == 0:
                     $this->response('', 204);
@@ -542,9 +538,52 @@ class Controller extends REST {
         $nom = $this->_request['nom'];
         $prenom = $this->_request['prenom'];
         $photo = $this->_request['photo'];
+        $email = $this->_request['email'];
         $id_facebook = $this->_request['id_facebook'];
         if (!empty($nom) && !empty($prenom) && !empty($photo) && !empty($id_facebook)) {
-            switch ($this->service->_updateUtilisateur($nom, $prenom, $photo, $id_facebook)) {
+            switch ($this->service->_updateUtilisateur($nom, $prenom, $photo, $email, $id_facebook)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updateStatutUtilisateurGroupe() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $nom_groupe = $this->_request['nom_groupe'];
+        $id_utilisateur = $this->_request['id_facebook'];
+        $new_statut = $this->_request['new_statut'];
+        if (!empty($nom_groupe) && !empty($id_utilisateur) && !empty($new_statut)) {
+            switch ($this->service->_updateStatutUtilisateurGroupe($nom_groupe, $id_utilisateur, $new_statut)) {
+                case true:
+                    $this->response('', 200);
+                    break;
+                case false:
+                    $this->response('', 304);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function updateStatutUtilisateurCommunaute() {
+        if ($this->get_request_method() != "PUT") {
+            $this->response('', 406);
+        }
+        $nom_communaute = $this->_request['nom_communaute'];
+        $id_utilisateur = $this->_request['id_facebook'];
+        $new_statut = $this->_request['new_statut'];
+        if (!empty($nom_communaute) && !empty($id_utilisateur) && !empty($new_statut)) {
+            switch ($this->service->_updateStatutUtilisateurCommunaute($nom_communaute, $id_utilisateur, $new_statut)) {
                 case true:
                     $this->response('', 200);
                     break;
@@ -634,16 +673,14 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $utilisateur = $this->_request['id_facebook'];
-        $groupe = $this->_request['groupe'];
-        $communaute = $this->_request['communaute'];
         $equipe1 = $this->_request['equipe1'];
         $equipe2 = $this->_request['equipe2'];
         $date_match = $this->_request['date_match'];
         $resultat = $this->_request['resultat'];
         $score1 = $this->_request['score1'];
         $score2 = $this->_request['score2'];
-        if (!empty($utilisateur) && (!empty($groupe) || !empty($communaute)) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat)) {
-            switch ($this->service->_updatePronostic($utilisateur, $groupe, $communaute, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2)) {
+        if (!empty($utilisateur) && !empty($equipe1) && !empty($equipe2) && !empty($date_match) && !empty($resultat)) {
+            switch ($this->service->_updatePronostic($utilisateur, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2)) {
                 case true:
                     $this->response('', 200);
                     break;
