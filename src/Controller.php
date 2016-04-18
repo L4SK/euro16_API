@@ -555,12 +555,13 @@ class Controller extends REST {
         $id_utilisateur = $this->_request['id_facebook'];
         $new_statut = $this->_request['new_statut'];
         if (!empty($nom_groupe) && !empty($id_utilisateur) && !empty($new_statut)) {
-            switch ($this->service->_updateStatutUtilisateurGroupe($nom_groupe, $id_utilisateur, $new_statut)) {
+            $update = $this->service->_updateStatutUtilisateurGroupe($nom_groupe, $id_utilisateur, $new_statut);
+            switch ($update) {
                 case true:
                     $this->response('', 200);
                     break;
                 case false:
-                    $this->response('', 304);
+                    $this->response($update, 304);
                     break;
             }
         } else {

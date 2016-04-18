@@ -791,7 +791,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
         $this->service->_creerGroupe($groupe, $utilisateur, "PhotoGroupe");
 
-        $this->assertTrue($this->service->_updateStatutUtilisateurGroupe($groupe, $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+        $this->assertTrue($this->service->_updateStatutUtilisateurGroupe($groupe, $utilisateur, "2"), "L'update du statut de l'utilisateur aurait du reussir");
     }
     public function test_updateStatutUtilisateurGroupeInexistante() {
         $utilisateur = "FB123456uAdmin";
@@ -807,7 +807,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
         $this->service->_creerCommunaute($communaute, $utilisateur, "PhotoCommunaute", "default");
 
-        $this->assertTrue($this->service->_updateStatutUtilisateurCommunaute($communaute, $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+        $this->assertTrue($this->service->_updateStatutUtilisateurCommunaute($communaute, $utilisateur, "2"), "L'update du statut de l'utilisateur aurait du reussir");
     }
     public function test_updateStatutUtilisateurCommunauteInexistante() {
         $utilisateur = "FB123456uAdmin";
