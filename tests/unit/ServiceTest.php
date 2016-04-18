@@ -785,6 +785,38 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->service->_updateUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", "FB123456u2"), "L'update d'utilisateur n'aurait pas du reussir");
     }
 
+    public function test_updateStatutUtilisateurGroupeSuccess() {
+        $groupe = "nomGroupe";
+        $utilisateur = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
+        $this->service->_creerGroupe($groupe, $utilisateur, "PhotoGroupe");
+
+        $this->assertTrue($this->service->_updateStatutUtilisateurGroupe($groupe, $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+    }
+    public function test_updateStatutUtilisateurGroupeInexistante() {
+        $utilisateur = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
+        $this->service->_creerGroupe("nomGroupe", $utilisateur, "PhotoGroupe");
+
+        $this->assertFalse($this->service->_updateStatutUtilisateurGroupe("nomGroupeInexistant", $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+    }
+
+    public function test_updateStatutUtilisateurCommunauteSuccess() {
+        $communaute = "nomCommunaute";
+        $utilisateur = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
+        $this->service->_creerCommunaute($communaute, $utilisateur, "PhotoCommunaute", "default");
+
+        $this->assertTrue($this->service->_updateStatutUtilisateurCommunaute($communaute, $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+    }
+    public function test_updateStatutUtilisateurCommunauteInexistante() {
+        $utilisateur = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $utilisateur);
+        $this->service->_creerCommunaute("nomCommunaute", $utilisateur, "PhotoCommunaute", "default");
+
+        $this->assertFalse($this->service->_updateStatutUtilisateurCommunaute("nomComInexistant", $utilisateur, "1"), "L'update du statut de l'utilisateur aurait du reussir");
+    }
+
     public function test_updateGroupeSuccess() {
         $groupe = "NomGroupe";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");

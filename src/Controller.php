@@ -254,8 +254,6 @@ class Controller extends REST {
                 break;
         }
     }
-
-
     private function getGroupesUtilisateur() {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);
@@ -277,7 +275,6 @@ class Controller extends REST {
                 break;
         }
     }
-
     private function getCommunautesUtilisateur() {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);
@@ -299,10 +296,6 @@ class Controller extends REST {
                 break;
         }
     }
-
-
-
-
     private function getCommunautes() {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);

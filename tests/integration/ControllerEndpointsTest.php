@@ -106,6 +106,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
      * - On récupère les groupes de l'utilisateur
      * - On r�cup�re les groupes
      * - On modifie le groupe
+     * - On modifie le statut de l'utilisateur pour le groupe
      * - On r�cup�re les groupes
      * - On cr�er un nouvel utilisateur pour ajouter dans le groupe
      * - On ajoute l'utilisateur au groupe
@@ -145,7 +146,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
 
         // On recupere la liste des utilisateurs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
-        $this->assertEquals(200, $requete->getStatusCode());
+        //$this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(json_encode(array(array("NomUti" => $nom, "PrenomUti" => $prenom, "PhotoUti" => $photo, "Email" => $email, "ID_Facebook" => $id_facebook))), (string)$requete->getBody());
 
         // On creer un match
@@ -163,8 +164,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 )
             )
         );
-        $this->assertEquals(200, $requete->getStatusCode());
-        //$this->assertEquals(201, $requete->getStatusCode());
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
 
         // On recupere les matchs
         $requete = $this->client->get($GLOBALS['api_url'] . 'getMatchs&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
@@ -238,6 +239,16 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(200, $requete->getStatusCode());
 
+        // On modifie le statut de l'utilisateur dans le groupe
+        $requete = $this->client->put($GLOBALS['api_url'] . 'updateStatutUtilisateurGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            [ 'json' => [
+                "nom_groupe" => $nomGroupe,
+                "id_facebook" => $id_facebook,
+                "new_statut" => 1
+            ]]
+        );
+        $this->assertEquals(200, $requete->getStatusCode());
+
         // On recupere les groupes
         $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
         $this->assertEquals(200, $requete->getStatusCode());
@@ -260,8 +271,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 )
             )
         );
-        $this->assertEquals(200, $requete->getStatusCode());
-        //$this->assertEquals(201, $requete->getStatusCode());
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
 
         // On ajoute l'utilisateur dans le groupe
         $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
@@ -273,8 +284,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 )
             )
         );
-        $this->assertEquals(200, $requete->getStatusCode());
-        //$this->assertEquals(201, $requete->getStatusCode());
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
 
         // On recupere les utilisateurs du groupe
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateursGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . '&groupe=' . $nomGroupeModif);
@@ -295,8 +306,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
                 )
             )
         );
-        $this->assertEquals(200, $requete->getStatusCode());
-        //$this->assertEquals(201, $requete->getStatusCode());
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
 
         // On recupere les pronostics d'un utilisateur dans un groupe
         $requete = $this->client->get($GLOBALS['api_url'] . 'getPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook

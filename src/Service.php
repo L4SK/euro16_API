@@ -554,7 +554,7 @@ class Service {
         if(empty($groupe) || empty($utilisateur) || empty($new_statut)){
             return false;
         }
-        $req = "SELECT * FROM Groupe WHERE NomGrp='$groupe'";
+        $req = "SELECT NomGrp FROM Groupe WHERE NomGrp='$groupe'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -566,8 +566,7 @@ class Service {
             error_log($this->mysqli->error);
             return false;
         }
-        $id = $result['ID_Grp'];
-        $req = "SELECT 1 FROM Utilisateur_Groupe WHERE Groupe='$id' AND Utilisateur='$utilisateur'";
+        $req = "SELECT 1 FROM Utilisateur_Groupe WHERE Groupe='$groupe' AND Utilisateur='$utilisateur'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -575,7 +574,7 @@ class Service {
         if ($sql->num_rows != 0) {
             return false;
         }
-        $req = "UPDATE Utilisateur_Groupe SET Statut='$new_statut' WHERE Groupe='$id' AND Utilisateur='$utilisateur'";
+        $req = "UPDATE Utilisateur_Groupe SET Statut='$new_statut' WHERE Groupe='$groupe' AND Utilisateur='$utilisateur'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -586,7 +585,7 @@ class Service {
         if(empty($communaute) || empty($utilisateur) || empty($new_statut)){
             return false;
         }
-        $req = "SELECT ID_Com FROM Communaute WHERE NomCom='$communaute'";
+        $req = "SELECT NomCom FROM Communaute WHERE NomCom='$communaute'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -598,8 +597,7 @@ class Service {
             error_log($this->mysqli->error);
             return false;
         }
-        $idCom = $result['ID_Com'];
-        $req = "SELECT 1 FROM Utilisateur_Communaute WHERE Communaute='$idCom' AND Utilisateur='$utilisateur'";
+        $req = "SELECT 1 FROM Utilisateur_Communaute WHERE Communaute='$communaute' AND Utilisateur='$utilisateur'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -607,7 +605,7 @@ class Service {
         if ($sql->num_rows != 0) {
             return false;
         }
-        $req = "UPDATE Utilisateur_Communaute SET Statut='$new_statut' WHERE Communaute='$idCom' AND Utilisateur='$utilisateur'  ";
+        $req = "UPDATE Utilisateur_Communaute SET Statut='$new_statut' WHERE Communaute='$communaute' AND Utilisateur='$utilisateur'  ";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
