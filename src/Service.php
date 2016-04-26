@@ -429,11 +429,11 @@ class Service {
         if ($sql->num_rows == 0) {
             return false;
         }
-
-        $req = "SELECT Utilisateur.*, Utilisateur_Groupe.Statut FROM Utilisateur JOIN Utilisateur_Groupe ON Utilisateur.ID_Facebook = Utilisateur_Groupe.Utilisateur WHERE Utilisateur_Groupe.Groupe = '$groupe'";
+        $ID_Grp = $sql->fetch_object()->ID_Grp;
+        $req = "SELECT Utilisateur.*, Utilisateur_Groupe.Statut FROM Utilisateur JOIN Utilisateur_Groupe ON Utilisateur.ID_Facebook = Utilisateur_Groupe.Utilisateur WHERE Utilisateur_Groupe.Groupe = '$ID_Grp'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
-            return "test";
+            return false;
         }
         if ($sql->num_rows > 0) {
             while ($rlt = $sql->fetch_assoc()) {
@@ -454,8 +454,8 @@ class Service {
         if ($sql->num_rows == 0) {
             return false;
         }
-
-        $req = "SELECT Utilisateur.*, Utilisateur_Communaute.Statut FROM Utilisateur JOIN Utilisateur_Communaute ON Utilisateur.ID_Facebook = Utilisateur_Communaute.Utilisateur WHERE Utilisateur_Communaute.Communaute = '$communaute'";
+        $ID_Com = $sql->fetch_object()->ID_Com;
+        $req = "SELECT Utilisateur.*, Utilisateur_Communaute.Statut FROM Utilisateur JOIN Utilisateur_Communaute ON Utilisateur.ID_Facebook = Utilisateur_Communaute.Utilisateur WHERE Utilisateur_Communaute.Communaute = '$ID_Com'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
