@@ -455,7 +455,7 @@ class Service {
             return false;
         }
 
-        $req = "SELECT Utilisateur.*, Utilisateur_Communaute.Statut FROM Utilisateur JOIN Utilisateur_Communaute ON Utilisateur.ID_Facebook = Utilisateur_Communaute.Utilisateur";
+        $req = "SELECT Utilisateur.*, Utilisateur_Communaute.Statut FROM Utilisateur JOIN Utilisateur_Communaute ON Utilisateur.ID_Facebook = Utilisateur_Communaute.Utilisateur WHERE Utilisateur_Communaute.Communaute = '$communaute'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
