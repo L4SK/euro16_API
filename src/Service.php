@@ -305,8 +305,23 @@ class Service {
         }
         return $result;
     }
-    public function _getGroupes() {
-        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe";
+    public function _getGroupes($utilisateur) {
+        $req = "SELECT Groupe FROM Utilisateur_Groupe WHERE Utilisateur = '$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $ids = array();
+        if ($sql->num_rows > 0) {
+            $cpt = 0;
+            while ($rlt = $sql->fetch_assoc()) {
+                $ids[$cpt] = $rlt["Groupe"];
+                $cpt = $cpt + 1;
+            }
+        }
+        $ids = implode(",", $ids);
+        $req = "SELECT NomGrp, AdminGrp, PhotoGrp FROM Groupe
+                WHERE Groupe.ID_Grp NOT IN ($ids)";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -319,11 +334,27 @@ class Service {
         }
         return $result;
     }
-    public function _getCommunautes() {
-        $req = "SELECT NomCom, AdminCom, PhotoCom, TypeCom FROM Communaute";
+    public function _getCommunautes($utilisateur) {
+        $req = "SELECT Communaute FROM Utilisateur_Communaute WHERE Utilisateur = '$utilisateur'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
+        }
+        $ids = array();
+        if ($sql->num_rows > 0) {
+            $cpt = 0;
+            while ($rlt = $sql->fetch_assoc()) {
+                $ids[$cpt] = $rlt["Communaute"];
+                $cpt = $cpt + 1;
+            }
+        }
+        $ids = implode(",", $ids);
+        $req = "SELECT Communaute.NomCom, Communaute.AdminCom, Communaute.PhotoCom, Communaute.TypeCom
+                FROM Communaute
+                WHERE Communaute.ID_Com NOT IN ($ids)";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return 'test2';
         }
         $result = array();
         if ($sql->num_rows > 0) {
@@ -520,7 +551,7 @@ class Service {
             return false;
         }
         if ($sql->num_rows == 0) {
-            return false;
+            return [];
         }
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);

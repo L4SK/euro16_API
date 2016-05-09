@@ -369,9 +369,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_getGroupesSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", "FB123456u2");
         $this->service->_creerGroupe("Groupe1", "FB123456u1", "PhotoGroupe1");
         $this->service->_creerGroupe("Groupe2", "FB123456u1", "PhotoGroupe2");
         $this->service->_creerGroupe("Groupe3", "FB123456u1", "PhotoGroupe3");
+        $this->service->_ajouterUtilisateurGroupe("FB123456u2", "Groupe3", 1);
 
         $expectedValue1 =
             array("NomGrp" => "Groupe1",
@@ -383,17 +385,12 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
                 "AdminGrp" => "FB123456u1",
                 "PhotoGrp" => "PhotoGroupe2"
             );
-        $expectedValue3 =
-            array("NomGrp" => "Groupe3",
-                "AdminGrp" => "FB123456u1",
-                "PhotoGrp" => "PhotoGroupe3"
-            );
-        $expectedSize = 3;
-        $value = $this->service->_getGroupes();
+        $expectedSize = 2;
+        $value = $this->service->_getGroupes("FB123456u2");
 
         $this->assertTrue(in_array($expectedValue1, $value), "Le resultat devrait contenir les groupes qui viennent d'etre crees");
-        $this->assertTrue(in_array($expectedValue2, $value), "Le resultat devrait contenir les groupes qui viennent d'etre crees");
-        $this->assertTrue(in_array($expectedValue3, $value), "Le resultat devrait contenir les groupes qui viennent d'etre crees");
+        //$this->assertTrue(in_array($expectedValue2, $value), "Le resultat devrait contenir les groupes qui viennent d'etre crees");
+        $this->assertEquals('test', $value, "Le resultat devrait contenir les groupes qui viennent d'etre crees");
         $this->assertEquals($expectedSize, sizeOf($value), "Le resultat devrait contenir 3 groupes");
     }
 
@@ -402,9 +399,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
     }
     public function test_getCommunautesSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
+        $this->service->_creerUtilisateur("Nom2", "Prenom2", "Photo2", "toto2@toto.fr", "FB123456u2");
         $this->service->_creerCommunaute("Communaute1", "FB123456u1", "PhotoCommunaute1", "default");
         $this->service->_creerCommunaute("Communaute2", "FB123456u1", "PhotoCommunaute2", "default");
         $this->service->_creerCommunaute("Communaute3", "FB123456u1", "PhotoCommunaute3", "default");
+        $this->service->_ajouterUtilisateurCommunaute("FB123456u2", 'Communaute3', 1);
 
         $expectedValue1 =
             array("NomCom" => "Communaute1",
@@ -418,18 +417,11 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
                 "PhotoCom" => "PhotoCommunaute2",
                 "TypeCom" => "default"
             );
-        $expectedValue3 =
-            array("NomCom" => "Communaute3",
-                "AdminCom" => "FB123456u1",
-                "PhotoCom" => "PhotoCommunaute3",
-                "TypeCom" => "default"
-            );
-        $expectedSize = 3;
-        $value = $this->service->_getCommunautes();
+        $expectedSize = 2;
+        $value = $this->service->_getCommunautes("FB123456u2");
 
         $this->assertTrue(in_array($expectedValue1, $value), "Le resultat devrait contenir les communautes qui viennent d'etre creees");
         $this->assertTrue(in_array($expectedValue2, $value), "Le resultat devrait contenir les communautes qui viennent d'etre creees");
-        $this->assertTrue(in_array($expectedValue3, $value), "Le resultat devrait contenir les communautes qui viennent d'etre creees");
         $this->assertEquals($expectedSize, sizeOf($value), "Le resultat devrait contenir 3 communautes");
     }
 

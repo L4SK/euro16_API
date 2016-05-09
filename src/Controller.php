@@ -238,20 +238,23 @@ class Controller extends REST {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);
         }
-        $groupe = $this->service->_getGroupes();
-        switch (true) {
-            case sizeof($groupe) > 0:
-                $this->response($this->json($groupe), 200);
-                break;
-            case is_array($groupe):
-                $this->response('', 204);
-                break;
-            case $groupe == false:
-                $this->response('', 400);
-                break;
-            default:
-                $this->response('', 400);
-                break;
+        $utilisateur = $this->_request['utilisateur'];
+        if(!empty($id_facebook)) {
+            $groupe = $this->service->_getGroupes($utilisateur);
+            switch (true) {
+                case sizeof($groupe) > 0:
+                    $this->response($this->json($groupe), 200);
+                    break;
+                case is_array($groupe):
+                    $this->response('', 204);
+                    break;
+                case $groupe == false:
+                    $this->response('', 400);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
         }
     }
     private function getGroupesUtilisateur() {
@@ -300,20 +303,23 @@ class Controller extends REST {
         if ($this->get_request_method() != "GET") {
             $this->response('', 406);
         }
-        $communaute = $this->service->_getCommunautes();
-        switch (true) {
-            case sizeof($communaute) == 0:
-                $this->response('', 204);
-                break;
-            case $communaute == false:
-                $this->response('', 400);
-                break;
-            case sizeof($communaute) > 0:
-                $this->response($this->json($communaute), 200);
-                break;
-            default:
-                $this->response('', 400);
-                break;
+        $utilisateur = $this->_request['utilisateur'];
+        if(!empty($id_facebook)) {
+            $communaute = $this->service->_getCommunautes($utilisateur);
+            switch (true) {
+                case sizeof($communaute) == 0:
+                    $this->response('', 204);
+                    break;
+                case $communaute == false:
+                    $this->response('', 400);
+                    break;
+                case sizeof($communaute) > 0:
+                    $this->response($this->json($communaute), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
         }
     }
     private function getUtilisateur() {
