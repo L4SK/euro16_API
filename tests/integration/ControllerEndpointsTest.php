@@ -756,16 +756,17 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
             array(
                 "json" => array(
-                    "id_facebook" => $id_facebook,
-                    "communaute" => $nomCommunaute,
+                    "id_facebook" => "PrenomTest2",
+                    "communaute" => "NomCommunaute",
                     "statut" => 1
                 )
             )
         );
 
         // On récupère les communautés
-        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
-        $this->assertEquals(204, $requete->getStatusCode());
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . "&utilisateur=PrenomTest2");
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals('test', (string)$requete->getBody());
     }
 }
 
