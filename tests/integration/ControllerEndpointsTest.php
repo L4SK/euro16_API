@@ -658,7 +658,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $requete->getStatusCode());
 
         // On r�cup�re les communaute
-        $requete = $this->client->get($GLOBALS['api_url'] . 'getGroupes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
         $this->assertEquals(204, $requete->getStatusCode());
 
         // On supprime les utilisateurs
@@ -673,6 +673,99 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $requete = $this->client->get($GLOBALS['api_url'] . 'getUtilisateurs&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
         $this->assertEquals(204, $requete->getStatusCode());
         $this->assertEquals('', (string)$requete->getBody());
+    }
+
+    /**
+     * 4eme test :
+     * - Creation d'un utilisateur
+     * - Creation d'un utilisateur
+     * - Creation d'une communauté
+     * - Creation d'une communauté
+     * - Ajout user dans communauté
+     * - On recupere les communautés de l'user
+     */
+
+    public function testEndpointGestionGetCommunautes() {
+        // Creation d'un utilisateur
+        $nom = "NomTest";
+        $prenom = "PrenomTest";
+        $photo = "PhotoTest";
+        $email = "toto@toto.fr";
+        $id_facebook = "IdFacebookTest";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                'json' => array(
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'photo' => $photo,
+                    'email' => $email,
+                    'id_facebook' => $id_facebook
+                )
+            )
+        );
+
+        // Creation d'un utilisateur
+        $nom2 = "NomTest2";
+        $prenom2 = "PrenomTest2";
+        $photo2 = "PhotoTest2";
+        $email2 = "toto2@toto.fr";
+        $id_facebook2 = "IdFacebookTest2";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                'json' => array(
+                    'nom' => $nom2,
+                    'prenom' => $prenom2,
+                    'photo' => $photo2,
+                    'email' => $email2,
+                    'id_facebook' => $id_facebook2
+                )
+            )
+        );
+
+        // Creation d'une communauté
+        $nomCommunaute = "NomCommunaute";
+        $photoCommunaute = "PhotoCommunaute";
+        $typeCom = "default";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomCommunaute,
+                    "admin" => $id_facebook,
+                    "photo" => $photoCommunaute,
+                    "type" => $typeCom
+                )
+            )
+        );
+
+        // Creation d'une communauté
+        $nomCommunaute = "NomCommunaute2";
+        $photoCommunaute = "PhotoCommunaute2";
+        $typeCom = "default";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomCommunaute,
+                    "admin" => $id_facebook,
+                    "photo" => $photoCommunaute,
+                    "type" => $typeCom
+                )
+            )
+        );
+
+        // On ajoute l'user dans la communauté
+        $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $id_facebook,
+                    "communaute" => $nomCommunaute,
+                    "statut" => 1
+                )
+            )
+        );
+
+        // On récupère les communautés
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
+        $this->assertEquals(204, $requete->getStatusCode());
     }
 }
 
