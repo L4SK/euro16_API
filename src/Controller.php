@@ -239,7 +239,7 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $utilisateur = $this->_request['utilisateur'];
-        if(!empty($id_facebook)) {
+        if(!empty($utilisateur)) {
             $groupe = $this->service->_getGroupes($utilisateur);
             switch (true) {
                 case sizeof($groupe) > 0:
@@ -304,7 +304,7 @@ class Controller extends REST {
             $this->response('', 406);
         }
         $utilisateur = $this->_request['utilisateur'];
-        if(!empty($id_facebook)) {
+        if(!empty($utilisateur)) {
             $communaute = $this->service->_getCommunautes($utilisateur);
             switch (true) {
                 case sizeof($communaute) == 0:

@@ -658,7 +658,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $requete->getStatusCode());
 
         // On r�cup�re les communaute
-        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . "&utilisateur=IdFacebookTest2");
         $this->assertEquals(204, $requete->getStatusCode());
 
         // On supprime les utilisateurs
@@ -756,7 +756,7 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
             array(
                 "json" => array(
-                    "id_facebook" => "PrenomTest2",
+                    "id_facebook" => "IdFacebookTest2",
                     "communaute" => "NomCommunaute",
                     "statut" => 1
                 )
@@ -764,9 +764,8 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         );
 
         // On récupère les communautés
-        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . "&utilisateur=PrenomTest2");
-        //$this->assertEquals(200, $requete->getStatusCode());
-        $this->assertEquals('test', (string)$requete->getBody());
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . "&utilisateur=IdFacebookTest2");
+        $this->assertEquals(200, $requete->getStatusCode());
     }
 }
 

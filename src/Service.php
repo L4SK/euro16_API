@@ -347,14 +347,14 @@ class Service {
                 $ids[$cpt] = $rlt["Communaute"];
                 $cpt = $cpt + 1;
             }
+            $ids = implode(",", $ids);
         }
-        $ids = implode(",", $ids);
         $req = "SELECT Communaute.NomCom, Communaute.AdminCom, Communaute.PhotoCom, Communaute.TypeCom
                 FROM Communaute
                 WHERE Communaute.ID_Com NOT IN ($ids)";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
-            return 'test2';
+            return false;
         }
         $result = array();
         if ($sql->num_rows > 0) {
