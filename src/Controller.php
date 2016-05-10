@@ -529,6 +529,84 @@ class Controller extends REST {
             $this->response($this->json($error), 400);
         }
     }
+    private function getClassementCommunaute() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $communaute = $this->_request['communaute'];
+        if(!empty($communaute)) {
+            $classement = $this->service->_getClassementCommunaute($communaute);
+            switch (true) {
+                case sizeof($classement) == 0:
+                    $this->response('', 204);
+                    break;
+                case $classement == false:
+                    $this->response($classement, 400);
+                    break;
+                case sizeof($classement) > 0:
+                    $this->response($this->json($classement), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getClassementGroupe() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $groupe = $this->_request['groupe'];
+        if(!empty($groupe)) {
+            $classement = $this->service->_getClassementGroupe($groupe);
+            switch (true) {
+                case sizeof($classement) == 0:
+                    $this->response('', 204);
+                    break;
+                case $classement == false:
+                    $this->response($classement, 400);
+                    break;
+                case sizeof($classement) > 0:
+                    $this->response($this->json($classement), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    private function getPronosticsUtilisateur() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $utilisateur = $this->_request['utilisateur'];
+        if(!empty($utilisateur)) {
+            $pronostics = $this->service->_getPronosticsUtilisateur($utilisateur);
+            switch (true) {
+                case sizeof($pronostics) == 0:
+                    $this->response('', 204);
+                    break;
+                case $pronostics == false:
+                    $this->response($pronostics, 400);
+                    break;
+                case sizeof($pronostics) > 0:
+                    $this->response($this->json($pronostics), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
 
     private function updateUtilisateur() {
         if ($this->get_request_method() != "PUT") {

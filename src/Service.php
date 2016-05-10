@@ -238,8 +238,13 @@ class Service {
             return false;
         }
         $id = $result['ID_Grp'];
-
+        $idCla = $result['ID_Cla'];
         $req = "INSERT INTO Utilisateur_Groupe(Utilisateur, Groupe, Statut) VALUES ('$id_facebook', '$id', '$statut')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '$idCla', '0')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -282,8 +287,13 @@ class Service {
             return false;
         }
         $id = $result['ID_Com'];
-
+        $idCla = $result['ID_Cla'];
         $req = "INSERT INTO Utilisateur_Communaute(Utilisateur, Communaute, Statut) VALUES ('$id_facebook', '$id', '$statut')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '$idCla', '0')";
         if (!$this->mysqli->query($req)) {
             error_log($this->mysqli->error);
             return false;
@@ -556,6 +566,73 @@ class Service {
         if (!($result = $sql->fetch_assoc())){
             error_log($this->mysqli->error);
             return false;
+        }
+        return $result;
+    }
+    public function _getClassementCommunaute($communaute) {
+        $req = "SELECT ID_Cla FROM Communaute WHERE NomCom = '$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $ID_Cla = $sql->fetch_object()->ID_Cla;
+        $req = "SELECT Utilisateur, Points
+                FROM Participe
+                WHERE Classement = '$ID_Cla'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getClassementGroupe($groupe) {
+        $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp = '$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $ID_Cla = $sql->fetch_object()->ID_Cla;
+        $req = "SELECT Utilisateur, Points
+                FROM Participe
+                WHERE Classement = '$ID_Cla'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getPronosticsUtilisateur($utilisateur) {
+        if(empty($utilisateur)) {
+            return false;
+        }
+        $req = "SELECT Pronostic.Utilisateur, Pronostic.Score1, Pronostic.Score2, Pronostic.Resultat, Match_Euro16.Equipe1, Match_Euro16.Equipe2, Match_Euro16.DateMatch
+                FROM Pronostic JOIN Match_Euro16
+                ON Pronostic.ID_Mch = Match_Euro16.ID_Mch
+                WHERE Utilisateur='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
         }
         return $result;
     }

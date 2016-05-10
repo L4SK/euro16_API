@@ -767,6 +767,292 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $requete = $this->client->get($GLOBALS['api_url'] . 'getCommunautes&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook . "&utilisateur=IdFacebookTest2");
         $this->assertEquals(200, $requete->getStatusCode());
     }
+
+    /**
+     * 5e test :
+     * - Cr�ation d'un utilisateur
+     * - On cr�er un match
+     * - On cr�er une communaute
+     * - On cr�er un nouvel utilisateur pour ajouter dans la communaute
+     * - On ajoute l'utilisateur a la communaute
+     * - On cr�er un pronostic d'un utilisateur dans une communaute
+     * - On cr�er un pronostic d'un utilisateur dans une communaute
+     * - On récupère le classement d'une communauté
+     */
+
+    public function testEndpointGestionGetClassementCommunaute() {
+        // Creation d'un utilisateur
+        $nom = "NomTest";
+        $prenom = "PrenomTest";
+        $photo = "PhotoTest";
+        $email = "toto@toto.fr";
+        $id_facebook = "IdFacebookTest";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nom,
+                    "prenom" => $prenom,
+                    "photo" => $photo,
+                    "email" => $email,
+                    "id_facebook" => $id_facebook
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un match
+        $equipe1 = "France" ;
+        $equipe2 = "Roumanie";
+        $date_match = "03-07-2016 20:00:00";
+        $groupe = "A";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerMatch&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "groupe" => $groupe,
+                    "score1" => 3,
+                    "score2" => 1
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer une communaute
+        $nomCommunaute = "NomCommunaute";
+        $photoCommunaute = "PhotoCommunaute";
+        $typeCom = "default";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomCommunaute,
+                    "admin" => $id_facebook,
+                    "photo" => $photoCommunaute,
+                    "type" => $typeCom
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un new utilisateur pour ajouter dans la communaute
+        $nomUser = "NomUser";
+        $prenomUser = "PrenomUser";
+        $photoUser = "PhotoUser";
+        $emailUser = "totoUser@toto.fr";
+        $idFacebookUser = "IdFacebookUser";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomUser,
+                    "prenom" => $prenomUser,
+                    "photo" => $photoUser,
+                    "email" => $emailUser,
+                    "id_facebook" => $idFacebookUser
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On ajoute l'utilisateur dans la communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $idFacebookUser,
+                    "communaute" => $nomCommunaute,
+                    "statut" => 2
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un pronostic d'un utilisateur dans une communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $id_facebook,
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "score1" => NULL,
+                    "score2" => NULL,
+                    "resultat" => "1"
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un pronostic d'un utilisateur dans une communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $idFacebookUser,
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "score1" => NULL,
+                    "score2" => NULL,
+                    "resultat" => "2"
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On recupere les pronostics d'un utilisateur dans une communaute
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getClassementCommunaute&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook
+            . '&communaute=' . $nomCommunaute
+        );
+        $this->assertEquals(200, $requete->getStatusCode());
+    }
+
+    /**
+     * 6e test :
+     * - Cr�ation d'un utilisateur
+     * - On cr�er un match
+     * - On cr�er une communaute
+     * - On cr�er un nouvel utilisateur pour ajouter dans la communaute
+     * - On ajoute l'utilisateur a la communaute
+     * - On cr�er un pronostic d'un utilisateur dans une communaute
+     * - On cr�er un pronostic d'un utilisateur dans une communaute
+     * - On récupère le classement d'une communauté
+     */
+
+    public function testEndpointGestionGetClassementGroupe() {
+        // Creation d'un utilisateur
+        $nom = "NomTest";
+        $prenom = "PrenomTest";
+        $photo = "PhotoTest";
+        $email = "toto@toto.fr";
+        $id_facebook = "IdFacebookTest";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nom,
+                    "prenom" => $prenom,
+                    "photo" => $photo,
+                    "email" => $email,
+                    "id_facebook" => $id_facebook
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un match
+        $equipe1 = "France" ;
+        $equipe2 = "Roumanie";
+        $date_match = "03-07-2016 20:00:00";
+        $groupe = "A";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerMatch&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "groupe" => $groupe,
+                    "score1" => 3,
+                    "score2" => 1
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer une communaute
+        $nomGroupe = "NomGroupe";
+        $photoGroupe = "PhotoGroupe";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomGroupe,
+                    "admin" => $id_facebook,
+                    "photo" => $photoGroupe
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un new utilisateur pour ajouter dans la communaute
+        $nomUser = "NomUser";
+        $prenomUser = "PrenomUser";
+        $photoUser = "PhotoUser";
+        $emailUser = "totoUser@toto.fr";
+        $idFacebookUser = "IdFacebookUser";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "nom" => $nomUser,
+                    "prenom" => $prenomUser,
+                    "photo" => $photoUser,
+                    "email" => $emailUser,
+                    "id_facebook" => $idFacebookUser
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On ajoute l'utilisateur dans la communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'ajouterUtilisateurGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $idFacebookUser,
+                    "groupe" => $nomGroupe,
+                    "statut" => 2
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un pronostic d'un utilisateur dans une communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $id_facebook,
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "score1" => NULL,
+                    "score2" => NULL,
+                    "resultat" => "1"
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un pronostic d'un utilisateur dans une communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $idFacebookUser,
+                    "equipe1" => $equipe1,
+                    "equipe2" => $equipe2,
+                    "date_match" => $date_match,
+                    "score1" => NULL,
+                    "score2" => NULL,
+                    "resultat" => "2"
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On recupere les pronostics d'un utilisateur dans une communaute
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getClassementGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook
+            . '&groupe=' . $nomGroupe
+        );
+        $this->assertEquals(200, $requete->getStatusCode());
+    }
 }
 
 ?>

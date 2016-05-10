@@ -761,6 +761,18 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($value, "La recuperation du pronostic n'aurait pas du reussir");
     }
 
+    public function test_getPronosticsUtilisateurSuccess() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
+        $this->service->_creerMatch("France", "Portugal", "01-07-2015 10:00:00", "A");
+        $this->service->_creerMatch("Angleterre", "Espagne", "03-07-2015 10:00:00", "B");
+        $this->service->_creerPronostic($id_facebook, "France", "Portugal", "01-07-2015 10:00:00", "", "", "1");
+        $this->service->_creerPronostic($id_facebook, "Angleterre", "Espagne", "03-07-2015 10:00:00", "", "", "2");
+
+        $value = $this->service->_getPronosticsUtilisateur($id_facebook);
+        $this->assertEquals(2, sizeof($value), "La recuperation du pronostic aurait du reussir");
+    }
+
     public function test_updateUtilisateurSuccess() {
         $this->service->_creerUtilisateur("Nom1", "Prenom1", "Photo1", "toto@toto.fr", "FB123456u1");
 
