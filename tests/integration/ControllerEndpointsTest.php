@@ -1051,6 +1051,9 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         $requete = $this->client->get($GLOBALS['api_url'] . 'getClassementGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook
             . '&groupe=' . $nomGroupe
         );
+
+        // On recupere les pronostics d'un utilisateur dans une communaute
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getClassementGlobal&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook);
         $this->assertEquals(200, $requete->getStatusCode());
     }
 }

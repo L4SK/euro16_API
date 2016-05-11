@@ -71,6 +71,15 @@ class Service {
             error_log($this->mysqli->error);
             return false;
         }
+        $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '1', '0')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if($this->mysqli->affected_rows != 1) {
+            error_log($this->mysqli->error);
+            return false;
+        }
         return true;
     }
     public function _creerGroupe($nom, $admin, $photo) {
@@ -594,9 +603,11 @@ class Service {
             return false;
         }
         $ID_Cla = $sql->fetch_object()->ID_Cla;
-        $req = "SELECT Utilisateur, Points
+        $req = "SELECT Participe.Points, Utilisateur.NomUti, Utilisateur.PrenomUti, Utilisateur.PhotoUti, Utilisateur.ID_Facebook
                 FROM Participe
-                WHERE Classement = '$ID_Cla'";
+                JOIN Utilisateur
+                ON Participe.Utilisateur = Utilisateur.ID_Facebook
+                WHERE Classement = '$ID_Cla' ORDER BY Points";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -616,9 +627,29 @@ class Service {
             return false;
         }
         $ID_Cla = $sql->fetch_object()->ID_Cla;
-        $req = "SELECT Utilisateur, Points
+        $req = "SELECT Participe.Points, Utilisateur.NomUti, Utilisateur.PrenomUti, Utilisateur.PhotoUti, Utilisateur.ID_Facebook
                 FROM Participe
-                WHERE Classement = '$ID_Cla'";
+                JOIN Utilisateur
+                ON Participe.Utilisateur = Utilisateur.ID_Facebook
+                WHERE Classement = '$ID_Cla' ORDER BY Points";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getClassementGlobal() {
+        $req = "SELECT Participe.Points, Utilisateur.NomUti, Utilisateur.PrenomUti, Utilisateur.PhotoUti, Utilisateur.ID_Facebook
+                FROM Participe
+                JOIN Utilisateur
+                ON Participe.Utilisateur = Utilisateur.ID_Facebook
+                WHERE Classement = '1' ORDER BY Points";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -949,6 +980,11 @@ class Service {
     }
     public function _deleteGroupe($groupe) {
         if (empty($groupe)) {
+            return -1;
+        }
+        $req = "DELETE FROM Groupe WHERE NomGrp = '$groupe'";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
             return -1;
         }
         $req = "DELETE FROM Groupe WHERE NomGrp = '$groupe'";

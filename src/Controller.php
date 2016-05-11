@@ -544,7 +544,7 @@ class Controller extends REST {
                     $this->response('', 204);
                     break;
                 case $classement == false:
-                    $this->response($classement, 400);
+                    $this->response('', 400);
                     break;
                 case sizeof($classement) > 0:
                     $this->response($this->json($classement), 200);
@@ -570,7 +570,7 @@ class Controller extends REST {
                     $this->response('', 204);
                     break;
                 case $classement == false:
-                    $this->response($classement, 400);
+                    $this->response('', 400);
                     break;
                 case sizeof($classement) > 0:
                     $this->response($this->json($classement), 200);
@@ -582,6 +582,26 @@ class Controller extends REST {
         } else {
             $error = array('status' => "Failed", "msg" => "Invalid json");
             $this->response($this->json($error), 400);
+        }
+    }
+    private function getClassementGlobal() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $classement = $this->service->_getClassementGlobal();
+        switch (true) {
+            case sizeof($classement) == 0:
+                $this->response('', 204);
+                break;
+            case $classement == false:
+                $this->response('', 400);
+                break;
+            case sizeof($classement) > 0:
+                $this->response($this->json($classement), 200);
+                break;
+            default:
+                $this->response('', 400);
+                break;
         }
     }
     private function getPronosticsUtilisateur() {
