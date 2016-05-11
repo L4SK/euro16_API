@@ -93,6 +93,9 @@ class Controller extends REST {
                 case -1:
                     $this->response('Nom de groupe déjà utilisé', 409);
                     break;
+                case -2:
+                    $this->response('Nombre de groupe créé dépassé', 304);
+                    break;
             }
         } else {
             $error = array('status' => "Failed", "msg" => "Invalid json");

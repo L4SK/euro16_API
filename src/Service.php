@@ -93,7 +93,16 @@ class Service {
         }
         if ($sql->num_rows != 0) {
             error_log("Impossible de creer le groupe : Le nom du groupe existe deja");
+            return -1;
+        }
+        $req = "SELECT COUNT(*) FROM Groupe WHERE AdminGrp='$admin'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
             return false;
+        }
+        if ($sql->num_rows > 5) {
+            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dépassé");
+            return -2;
         }
         $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
         if (!$this->mysqli->query($req)) {
@@ -124,6 +133,15 @@ class Service {
         if ($sql->num_rows != 1) {
             error_log("Impossible de creer la communaute : L'admin n'est pas un utilisateur existant");
             return false;
+        }
+        $req = "SELECT COUNT(*) FROM Communaute WHERE NomCom='$admin'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows > 5) {
+            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dépassé");
+            return -2;
         }
         $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
         if (!$this->mysqli->query($req)) {
