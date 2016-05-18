@@ -709,7 +709,7 @@ class Service {
             }
             $idsMatch = implode(",", $idsMatch);
         }
-        $req = "SELECT DISTINCT Match_Euro16.Equipe1, Match_Euro16.Equipe2, Match_Euro16.DateMatch
+        $req = "SELECT DISTINCT Match_Euro16.Equipe1, Match_Euro16.Equipe2, Match_Euro16.DateMatch, Match_Euro16.Groupe
                 FROM Match_Euro16
                 WHERE Match_Euro16.ID_Mch NOT IN ('$idsMatch')
                 AND Match_Euro16.DateMatch > CURRENT_TIMESTAMP
