@@ -110,7 +110,7 @@ class Service {
             return false;
         }
         if ($sql->num_rows > 5) {
-            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dépassé");
+            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dï¿½passï¿½");
             return -2;
         }
         $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
@@ -149,7 +149,7 @@ class Service {
             return false;
         }
         if ($sql->num_rows > 5) {
-            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dépassé");
+            error_log("Impossible de creer le groupe : Le nombre de groupe possible est dï¿½passï¿½");
             return -2;
         }
         $req = "INSERT INTO Classement(ID_Bar) VALUES (10001)";
@@ -683,6 +683,7 @@ class Service {
         $result = array();
         if ($sql->num_rows > 0) {
             while ($rlt = $sql->fetch_assoc()) {
+                $rlt["DateMatch"] = strtotime($rlt["DateMatch"]);
                 $result[] = $rlt;
             }
         }
@@ -724,6 +725,7 @@ class Service {
         $result = array();
         if ($sql->num_rows > 0) {
             while ($rlt = $sql->fetch_assoc()) {
+                $rlt["DateMatch"] = strtotime($rlt["DateMatch"]);
                 $result[] = $rlt;
             }
         }
