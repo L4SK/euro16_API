@@ -630,6 +630,122 @@ class Controller extends REST {
             $this->response($this->json($error), 400);
         }
     }
+    // TODO : Test intégration
+    private function getNonPronosticsUtilisateur() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $utilisateur = $this->_request['utilisateur'];
+        if(!empty($utilisateur)) {
+            $pronostics = $this->service->_getNonPronosticsUtilisateur($utilisateur);
+            switch (true) {
+                case sizeof($pronostics) == 0:
+                    $this->response('', 204);
+                    break;
+                case $pronostics == false:
+                    $this->response($pronostics, 400);
+                    break;
+                case sizeof($pronostics) > 0:
+                    $this->response($this->json($pronostics), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    // TODO : Test intégration
+    private function getPronosticsGroupe() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $groupe = $this->_request['groupe'];
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        if(!empty($groupe) || !empty($equipe1) || !empty($equipe2) || !empty($date_match)) {
+            $pronostics = $this->service->_getPronosticsGroupe($groupe, $equipe1, $equipe2, $date_match);
+            switch (true) {
+                case sizeof($pronostics) == 0:
+                    $this->response('', 204);
+                    break;
+                case $pronostics == false:
+                    $this->response($pronostics, 400);
+                    break;
+                case sizeof($pronostics) > 0:
+                    $this->response($this->json($pronostics), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    // TODO : Test intégration
+    private function getPronosticsCommunaute() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $communaute = $this->_request['communaute'];
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        if(!empty($communaute) || !empty($equipe1) || !empty($equipe2) || !empty($date_match)) {
+            $pronostics = $this->service->_getPronosticsCommunaute($communaute, $equipe1, $equipe2, $date_match);
+            switch (true) {
+                case sizeof($pronostics) == 0:
+                    $this->response('', 204);
+                    break;
+                case $pronostics == false:
+                    $this->response($pronostics, 400);
+                    break;
+                case sizeof($pronostics) > 0:
+                    $this->response($this->json($pronostics), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
+    // TODO : Test intégration
+    private function getPronosticsGlobal() {
+        if ($this->get_request_method() != "GET") {
+            $this->response('', 406);
+        }
+        $equipe1 = $this->_request['equipe1'];
+        $equipe2 = $this->_request['equipe2'];
+        $date_match = $this->_request['date_match'];
+        if(!empty($equipe1) || !empty($equipe2) || !empty($date_match)) {
+            $pronostics = $this->service->_getPronosticsGlobal($equipe1, $equipe2, $date_match);
+            switch (true) {
+                case sizeof($pronostics) == 0:
+                    $this->response('', 204);
+                    break;
+                case $pronostics == false:
+                    $this->response($pronostics, 400);
+                    break;
+                case sizeof($pronostics) > 0:
+                    $this->response($this->json($pronostics), 200);
+                    break;
+                default:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
 
     private function updateUtilisateur() {
         if ($this->get_request_method() != "PUT") {

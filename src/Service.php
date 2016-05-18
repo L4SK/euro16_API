@@ -196,6 +196,9 @@ class Service {
             error_log("Resultat incorrect");
             return false;
         }
+        if(strtotime($date_match) < time()) {
+            return false;
+        }
         $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
@@ -685,6 +688,192 @@ class Service {
         }
         return $result;
     }
+    public function _getNonPronosticsUtilisateur($utilisateur) {
+        if(empty($utilisateur)) {
+            return false;
+        }
+        $req = "SELECT Match_Euro16.ID_Mch
+                FROM Pronostic JOIN Match_Euro16
+                ON Pronostic.ID_Mch = Match_Euro16.ID_Mch
+                WHERE Utilisateur='$utilisateur'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $idsMatch = array();
+        if ($sql->num_rows > 0) {
+            $cpt = 0;
+            while ($rlt = $sql->fetch_assoc()) {
+                $idsMatch[$cpt] = $rlt["ID_Mch"];
+                $cpt = $cpt + 1;
+            }
+            $idsMatch = implode(",", $idsMatch);
+        }
+        $req = "SELECT DISTINCT Match_Euro16.Equipe1, Match_Euro16.Equipe2, Match_Euro16.DateMatch
+                FROM Match_Euro16
+                WHERE Match_Euro16.ID_Mch NOT IN ('$idsMatch')
+                AND Match_Euro16.DateMatch > CURRENT_TIMESTAMP
+                ORDER BY Match_Euro16.DateMatch ASC";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getPronosticsGroupe($groupe, $equipe1, $equipe2, $date_match) {
+        if(empty($groupe) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        $ID_Mch = $sql->fetch_object()->ID_Mch;
+        $req = "SELECT Utilisateur_Groupe.Utilisateur
+                FROM Utilisateur_Groupe JOIN Groupe
+                ON Utilisateur_Groupe.Groupe = Groupe.ID_Grp
+                WHERE Groupe.NomGrp='$groupe'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $idsUtilisateur = array();
+        if ($sql->num_rows > 0) {
+            $cpt = 0;
+            while ($rlt = $sql->fetch_assoc()) {
+                $idsUtilisateur[$cpt] = "'" . $rlt["Utilisateur"] . "'";
+                $cpt = $cpt + 1;
+            }
+            $idsUtilisateur = implode(",", $idsUtilisateur);
+        } else {
+            $idsUtilisateur = implode("", $idsUtilisateur);
+        }
+        if(!empty($idsUtilisateur)) {
+            $req = "SELECT Resultat
+                FROM Pronostic
+                WHERE Utilisateur IN ($idsUtilisateur)
+                AND ID_Mch='$ID_Mch'";
+        } else {
+            $req = "SELECT Resultat
+                FROM Pronostic
+                WHERE ID_Mch='$ID_Mch'";
+        }
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getPronosticsCommunaute($communaute, $equipe1, $equipe2, $date_match) {
+        if(empty($communaute) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        $ID_Mch = $sql->fetch_object()->ID_Mch;
+        $req = "SELECT Utilisateur_Communaute.Utilisateur
+                FROM Utilisateur_Communaute JOIN Communaute
+                ON Utilisateur_Communaute.Communaute = Communaute.ID_Com
+                WHERE Communaute.NomCom='$communaute'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        $idsUtilisateur = array();
+        if ($sql->num_rows > 0) {
+            $cpt = 0;
+            while ($rlt = $sql->fetch_assoc()) {
+                $idsUtilisateur[$cpt] = "'" . $rlt["Utilisateur"] . "'";
+                $cpt = $cpt + 1;
+            }
+            $idsUtilisateur = implode(",", $idsUtilisateur);
+        } else {
+            $idsUtilisateur = implode("", $idsUtilisateur);
+        }
+        if(!empty($idsUtilisateur)) {
+            $req = "SELECT Resultat
+                FROM Pronostic
+                WHERE Utilisateur IN ($idsUtilisateur)
+                AND ID_Mch='$ID_Mch'";
+        } else {
+            $req = "SELECT Resultat
+                FROM Pronostic
+                WHERE ID_Mch='$ID_Mch'";
+        }
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
+    public function _getPronosticsGlobal($equipe1, $equipe2, $date_match) {
+        if(empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        $req = "SELECT ID_Mch FROM Match_Euro16 WHERE Equipe1='$equipe1' AND Equipe2='$equipe2' AND DateMatch=STR_TO_DATE('$date_match','%d-%m-%Y %H:%i:%s')";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return false;
+        }
+        $ID_Mch = $sql->fetch_object()->ID_Mch;
+        $req = "SELECT Resultat
+                FROM Pronostic
+                WHERE ID_Mch='$ID_Mch'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows == 0) {
+            return [];
+        }
+        $result = array();
+        if ($sql->num_rows > 0) {
+            while ($rlt = $sql->fetch_assoc()) {
+                $result[] = $rlt;
+            }
+        }
+        return $result;
+    }
 
     public function _updateUtilisateur($nom, $prenom, $photo, $email, $id_facebook) {
         if(empty($id_facebook)){
@@ -936,6 +1125,9 @@ class Service {
     }
     public function _updatePronostic($utilisateur, $equipe1, $equipe2, $date_match, $resultat, $score1, $score2) {
         if(empty($utilisateur) || empty($equipe1) || empty($equipe2) || empty($date_match)) {
+            return false;
+        }
+        if(strtotime($date_match) < time()) {
             return false;
         }
         $req = "SELECT * FROM Utilisateur WHERE ID_Facebook='$utilisateur'";

@@ -1047,6 +1047,48 @@ class ControllerEndpointsTest extends PHPUnit_Framework_TestCase {
         //$this->assertEquals(200, $requete->getStatusCode());
         $this->assertEquals(201, $requete->getStatusCode());
 
+        // On creer un match
+        $equipe1Modif = "Albanie" ;
+        $equipe2Modif = "Roumanie";
+        $date_matchModif = "03-07-2016 20:00:00";
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerMatch&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "equipe1" => $equipe1Modif,
+                    "equipe2" => $equipe2Modif,
+                    "date_match" => $date_matchModif,
+                    "groupe" => $groupe,
+                    "score1" => 2,
+                    "score2" => 0
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On creer un pronostic d'un utilisateur dans une communaute
+        $requete = $this->client->post($GLOBALS['api_url'] . 'creerPronostic&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook,
+            array(
+                "json" => array(
+                    "id_facebook" => $idFacebookUser,
+                    "equipe1" => $equipe1Modif,
+                    "equipe2" => $equipe2Modif,
+                    "date_match" => $date_matchModif,
+                    "score1" => NULL,
+                    "score2" => NULL,
+                    "resultat" => "1"
+                )
+            )
+        );
+        //$this->assertEquals(200, $requete->getStatusCode());
+        $this->assertEquals(201, $requete->getStatusCode());
+
+        // On recupere les pronostics d'un utilisateur dans une communaute
+        $requete = $this->client->get($GLOBALS['api_url'] . 'getNonPronosticsUtilisateur&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook
+            . '&utilisateur=' . $idFacebookUser
+        );
+        $this->assertEquals('test', (string)$requete->getBody());
+
         // On recupere les pronostics d'un utilisateur dans une communaute
         $requete = $this->client->get($GLOBALS['api_url'] . 'getClassementGroupe&cle=' . $GLOBALS["cle"] . '&id=' . $id_facebook
             . '&groupe=' . $nomGroupe

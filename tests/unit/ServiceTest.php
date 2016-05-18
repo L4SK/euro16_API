@@ -160,7 +160,7 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $score1 = "";
         $score2 = "";
         $resultat = "1";
-        $date_match = "01-07-2015 10:00:00";
+        $date_match = "01-07-2016 10:00:00";
         $groupe = "A";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
         $this->service->_creerMatch($equipe1, $equipe2, $date_match, $groupe);
@@ -771,6 +771,60 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
 
         $value = $this->service->_getPronosticsUtilisateur($id_facebook);
         $this->assertEquals(2, sizeof($value), "La recuperation du pronostic aurait du reussir");
+    }
+
+    public function test_getNonPronosticsUtilisateurSuccess() {
+        $id_facebook = "FB123456uAdmin";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", $id_facebook);
+        $this->service->_creerMatch("France", "Portugal", "01-07-2015 10:00:00", "A");
+        $this->service->_creerMatch("Angleterre", "Espagne", "03-05-2016 10:00:00", "B");
+        $this->service->_creerPronostic($id_facebook, "France", "Portugal", "01-07-2015 10:00:00", "", "", "1");
+
+        $value = $this->service->_getNonPronosticsUtilisateur($id_facebook);
+        $this->assertEquals(1, sizeOf($value), "La recuperation du pronostic aurait du reussir");
+    }
+
+    public function test_getPronosticsGroupeSuccess() {
+        $groupe = "GroupeTest";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomUser", "PrenomUser", "PhotoUser", "toto@toto.fr", "FB123456uUser");
+        $this->service->_creerGroupe($groupe, "FB123456uAdmin", "PhotoGrpTest");
+        $this->service->_ajouterUtilisateurGroupe("FB123456uUser", $groupe, 1);
+        $this->service->_creerMatch("France", "Portugal", "01-07-2016 10:00:00", "A");
+        $this->service->_creerMatch("Angleterre", "Espagne", "03-05-2016 10:00:00", "B");
+        $this->service->_creerPronostic("FB123456uAdmin", "France", "Portugal", "01-07-2016 10:00:00", "", "", "1");
+        $this->service->_creerPronostic("FB123456uUser", "France", "Portugal", "01-07-2016 10:00:00", "", "", "2");
+
+        $value = $this->service->_getPronosticsGroupe($groupe, "France", "Portugal", "01-07-2016 10:00:00");
+        $this->assertEquals(2, sizeOf($value), "La recuperation des pronostics aurait du reussir");
+    }
+
+    public function test_getPronosticsCommunauteSuccess() {
+        $communaute = "CommunauteTest";
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomUser", "PrenomUser", "PhotoUser", "toto@toto.fr", "FB123456uUser");
+        $this->service->_creerCommunaute($communaute, "FB123456uAdmin", "PhotoGrpTest", "default");
+        $this->service->_ajouterUtilisateurCommunaute("FB123456uUser", $communaute, 1);
+        $this->service->_creerMatch("France", "Portugal", "01-07-2016 10:00:00", "A");
+        $this->service->_creerMatch("Angleterre", "Espagne", "03-05-2016 10:00:00", "B");
+        $this->service->_creerPronostic("FB123456uAdmin", "France", "Portugal", "01-07-2016 10:00:00", "", "", "1");
+        $this->service->_creerPronostic("FB123456uUser", "France", "Portugal", "01-07-2016 10:00:00", "", "", "2");
+
+        $value = $this->service->_getPronosticsCommunaute($communaute, "France", "Portugal", "01-07-2016 10:00:00");
+        $this->assertEquals(2, sizeOf($value), "La recuperation des pronostics aurait du reussir");
+    }
+
+    public function test_getPronosticsGlobalSuccess() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+        $this->service->_creerUtilisateur("NomUser", "PrenomUser", "PhotoUser", "toto@toto.fr", "FB123456uUser");
+        $this->service->_creerMatch("France", "Portugal", "01-07-2016 10:00:00", "A");
+        $this->service->_creerMatch("Angleterre", "Espagne", "03-05-2016 10:00:00", "B");
+        $this->service->_creerPronostic("FB123456uAdmin", "France", "Portugal", "01-07-2016 10:00:00", "", "", "1");
+        $this->service->_creerPronostic("FB123456uUser", "France", "Portugal", "01-07-2016 10:00:00", "", "", "2");
+
+        $value = $this->service->_getPronosticsGlobal("France", "Portugal", "01-07-2016 10:00:00");
+        $this->assertEquals('test', $value, "La recuperation des pronostics aurait du reussir");
+        $this->assertEquals(2, sizeOf($value), "La recuperation des pronostics aurait du reussir");
     }
 
     public function test_updateUtilisateurSuccess() {
