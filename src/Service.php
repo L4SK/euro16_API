@@ -693,28 +693,11 @@ class Service {
         if(empty($utilisateur)) {
             return false;
         }
-        $req = "SELECT Match_Euro16.ID_Mch
-                FROM Pronostic JOIN Match_Euro16
-                ON Pronostic.ID_Mch = Match_Euro16.ID_Mch
-                WHERE Utilisateur='$utilisateur'";
-        if (!($sql = $this->mysqli->query($req))) {
-            error_log($this->mysqli->error);
-            return false;
-        }
-        $idsMatch = array();
-        if ($sql->num_rows > 0) {
-            $cpt = 0;
-            while ($rlt = $sql->fetch_assoc()) {
-                $idsMatch[$cpt] = $rlt["ID_Mch"];
-                $cpt = $cpt + 1;
-            }
-            $idsMatch = implode(",", $idsMatch);
-        }
-        $req = "SELECT DISTINCT Match_Euro16.Equipe1, Match_Euro16.Equipe2, Match_Euro16.DateMatch, Match_Euro16.Groupe
-                FROM Match_Euro16
-                WHERE Match_Euro16.ID_Mch NOT IN ('$idsMatch')
-                AND Match_Euro16.DateMatch > CURRENT_TIMESTAMP
-                ORDER BY Match_Euro16.DateMatch ASC";
+        $req = "SELECT DISTINCT me.Equipe1, me.Equipe2, me.DateMatch, me.Groupe
+                FROM Match_Euro16 me
+                WHERE me.ID_Mch NOT IN (SELECT p.ID_Mch FROM Pronostic p WHERE p.Utilisateur='$utilisateur')
+                AND me.DateMatch > CURRENT_TIMESTAMP
+                ORDER BY me.DateMatch ASC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
