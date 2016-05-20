@@ -375,25 +375,9 @@ class Service {
         return $result;
     }
     public function _getCommunautes($utilisateur) {
-        $req = "SELECT Communaute FROM Utilisateur_Communaute WHERE Utilisateur = '$utilisateur'";
-        if (!($sql = $this->mysqli->query($req))) {
-            error_log($this->mysqli->error);
-            return false;
-        }
-        $ids = array();
-        if ($sql->num_rows > 0) {
-            $cpt = 0;
-            while ($rlt = $sql->fetch_assoc()) {
-                $ids[$cpt] = $rlt["Communaute"];
-                $cpt = $cpt + 1;
-            }
-            $ids = implode(",", $ids);
-        } else {
-            $ids = implode("", $ids);
-        }
         $req = "SELECT Communaute.NomCom, Communaute.AdminCom, Communaute.PhotoCom, Communaute.TypeCom
                 FROM Communaute
-                WHERE Communaute.ID_Com NOT IN ($ids)";
+                WHERE Communaute.ID_Com NOT IN (SELECT Communaute FROM Utilisateur_Communaute WHERE Utilisateur = '$utilisateur')";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
