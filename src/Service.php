@@ -388,6 +388,8 @@ class Service {
                 $cpt = $cpt + 1;
             }
             $ids = implode(",", $ids);
+        } else {
+            $ids = implode("", $ids);
         }
         $req = "SELECT Communaute.NomCom, Communaute.AdminCom, Communaute.PhotoCom, Communaute.TypeCom
                 FROM Communaute
