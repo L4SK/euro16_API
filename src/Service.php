@@ -596,7 +596,7 @@ class Service {
                 FROM Participe
                 JOIN Utilisateur
                 ON Participe.Utilisateur = Utilisateur.ID_Facebook
-                WHERE Classement = '$ID_Cla' ORDER BY Points";
+                WHERE Classement = '$ID_Cla' ORDER BY Points DESC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -620,7 +620,7 @@ class Service {
                 FROM Participe
                 JOIN Utilisateur
                 ON Participe.Utilisateur = Utilisateur.ID_Facebook
-                WHERE Classement = '$ID_Cla' ORDER BY Points";
+                WHERE Classement = '$ID_Cla' ORDER BY Points DESC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -638,7 +638,7 @@ class Service {
                 FROM Participe
                 JOIN Utilisateur
                 ON Participe.Utilisateur = Utilisateur.ID_Facebook
-                WHERE Classement = '1' ORDER BY Points";
+                WHERE Classement = '1' ORDER BY Points DESC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
