@@ -29,8 +29,7 @@
         "Iceland" => "Islande"
         );
     // url de la liste des matchs de l'euro2016
-    //$url = "http://api.football-data.org/v1/soccerseasons/424/fixtures";
-    $url = "http://miscusi-family.fr/test_api.html";
+    $url = "http://api.football-data.org/v1/soccerseasons/424/fixtures";
 
     $json = file_get_contents($url);
     $parsed_json = json_decode($json);
