@@ -216,6 +216,25 @@ class Controller extends REST {
             $this->response($this->json($error), 400);
         }
     }
+    private function ajouterUtilisateurGlobal() {
+        if ($this->get_request_method() != "POST") {
+            $this->response('', 406);
+        }
+        $id_facebook = $this->_request['id_facebook'];
+        if (!empty($id_facebook)) {
+            switch ($this->service->_ajouterUtilisateurGlobal($id_facebook)) {
+                case true:
+                    $this->response('', 201);
+                    break;
+                case false:
+                    $this->response('', 400);
+                    break;
+            }
+        } else {
+            $error = array('status' => "Failed", "msg" => "Invalid json");
+            $this->response($this->json($error), 400);
+        }
+    }
 
     private function getUtilisateurs() {
         if ($this->get_request_method() != "GET") {

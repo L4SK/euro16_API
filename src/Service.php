@@ -71,15 +71,6 @@ class Service {
             error_log($this->mysqli->error);
             return false;
         }
-        $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '1', '0')";
-        if (!$this->mysqli->query($req)) {
-            error_log($this->mysqli->error);
-            return false;
-        }
-        if($this->mysqli->affected_rows != 1) {
-            error_log($this->mysqli->error);
-            return false;
-        }
         return true;
     }
     public function _creerGroupe($nom, $admin, $photo) {
@@ -325,6 +316,30 @@ class Service {
         }
         $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '$idCla', '0')";
         if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        return true;
+    }
+    public function _ajouterUtilisateurGlobal($id_facebook) {
+        if (empty($id_facebook)) {
+            return false;
+        }
+        $req = "SELECT 1 FROM Utilisateur WHERE ID_Facebook='$id_facebook'";
+        if (!($sql = $this->mysqli->query($req))) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if ($sql->num_rows != 1) {
+            error_log("Impossible d'ajouter l'utilisateur : inexistant en base");
+            return false;
+        }
+        $req = "INSERT INTO Participe(Utilisateur, Classement, Points) VALUES ('$id_facebook', '1', '0')";
+        if (!$this->mysqli->query($req)) {
+            error_log($this->mysqli->error);
+            return false;
+        }
+        if($this->mysqli->affected_rows != 1) {
             error_log($this->mysqli->error);
             return false;
         }
@@ -1211,6 +1226,7 @@ class Service {
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return -1;
+
         }
         $ID_Com = $sql->fetch_object()->ID_Com;
         $req = "DELETE FROM Utilisateur_Communaute WHERE Utilisateur = '$id_facebook' AND Communaute = '$ID_Com'";

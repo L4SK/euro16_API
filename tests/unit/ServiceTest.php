@@ -215,6 +215,14 @@ class ServiceTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedValue, $value, "L'ajout de pronostic aurait du echoue pour resultat incorrect");
     }
 
+    public function test_ajouterUtilisateurGlobalSuccess() {
+        $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
+
+        $expectedValue = true;
+        $value = $this->service->_ajouterUtilisateurGlobal("FB123456uAdmin");
+        $this->assertEquals($expectedValue, $value, "L'ajout d'utilisateur au global aurait du reussir");
+    }
+
     public function test_ajouterUtilisateurGroupeSuccess() {
         $groupe = "NomGroupe";
         $this->service->_creerUtilisateur("NomAdmin", "PrenomAdmin", "PhotoAdmin", "toto@toto.fr", "FB123456uAdmin");
