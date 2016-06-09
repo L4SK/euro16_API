@@ -601,17 +601,22 @@ class Service {
         return $result;
     }
     public function _getClassementCommunaute($communaute) {
-        $req = "SELECT ID_Cla FROM Communaute WHERE NomCom = '$communaute'";
+        $req = "SELECT ID_Cla, ID_Com FROM Communaute WHERE NomCom = '$communaute'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
         }
-        $ID_Cla = $sql->fetch_object()->ID_Cla;
+        $info_comm = $sql->fetch_object();
+        $ID_Cla = $info_comm->ID_Cla;
+        $ID_Com = $info_comm->ID_Com;
         $req = "SELECT Participe.Points, Utilisateur.NomUti, Utilisateur.PrenomUti, Utilisateur.PhotoUti, Utilisateur.ID_Facebook
                 FROM Participe
                 JOIN Utilisateur
                 ON Participe.Utilisateur = Utilisateur.ID_Facebook
-                WHERE Classement = '$ID_Cla' ORDER BY Points DESC";
+                WHERE Classement = '$ID_Cla' AND Utilisateur.ID_Facebook IN (SELECT sr.Utilisateur
+                                                                                  FROM Utilisateur_Communaute sr
+                                                                                  WHERE sr.Communaute = '$ID_Com' AND sr.Statut = '1')
+                ORDER BY Points DESC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
@@ -625,17 +630,22 @@ class Service {
         return $result;
     }
     public function _getClassementGroupe($groupe) {
-        $req = "SELECT ID_Cla FROM Groupe WHERE NomGrp = '$groupe'";
+        $req = "SELECT ID_Cla, ID_Grp FROM Groupe WHERE NomGrp = '$groupe'";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
         }
-        $ID_Cla = $sql->fetch_object()->ID_Cla;
+        $info_grp = $sql->fetch_object();
+        $ID_Cla = $info_grp->ID_Cla;
+        $ID_Grp = $info_grp->ID_Grp;
         $req = "SELECT Participe.Points, Utilisateur.NomUti, Utilisateur.PrenomUti, Utilisateur.PhotoUti, Utilisateur.ID_Facebook
                 FROM Participe
                 JOIN Utilisateur
                 ON Participe.Utilisateur = Utilisateur.ID_Facebook
-                WHERE Classement = '$ID_Cla' ORDER BY Points DESC";
+                WHERE Classement = '$ID_Cla' AND Utilisateur.ID_Facebook IN (SELECT sr.Utilisateur
+                                                                                  FROM Utilisateur_Groupe sr
+                                                                                  WHERE sr.Groupe = '$ID_Grp' AND sr.Statut = '1')
+                ORDER BY Points DESC";
         if (!($sql = $this->mysqli->query($req))) {
             error_log($this->mysqli->error);
             return false;
